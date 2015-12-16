@@ -1,7 +1,7 @@
 var Discord = require('discord.js');
 
 // Configs
-var auth = require('./auth.json');
+// var app = require('./app.json');
 var conf = require('./config.json');
 
 // Dependencies
@@ -19,6 +19,7 @@ var commands = {
 			for (param in conf.giphy_params) {
 				params += '&' + param + '=' + conf.giphy_params[param];
 			}
+			params += '&api_key=' + process.env.GIPHY_KEY;
 
 			var request_url = conf.urls.giphy + '?' + query + params;
 			request(request_url, function (error, response, body) {
@@ -97,4 +98,4 @@ bot.on("message", function(message){
 	});
 });
 
-bot.login(auth.email, auth.password);
+bot.login(process.env.EMAIL, process.env.PASSWORD);

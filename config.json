@@ -1,0 +1,11 @@
+{
+	"urls" : {
+		"giphy" : "http://api.giphy.com/v1/gifs/search"
+	},
+
+	"giphy_params" : {
+		"limit" : 25,
+		"fmt" : "json",
+		"api_key" : "dc6zaTOxFJmzC"
+	}
+}
