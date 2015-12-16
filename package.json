@@ -1,0 +1,22 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "<name-of-bot> gif <gif-query>",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattnguyen1/DiscordBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattnguyen1/DiscordBot/issues"
+  },
+  "homepage": "https://github.com/mattnguyen1/DiscordBot#readme",
+  "dependencies": {
+    "discord.js": "^5.1.0"
+  }
+}

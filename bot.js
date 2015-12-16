@@ -29,11 +29,11 @@ var commands = {
 					callback(new Error("Giphy error."), "Bad Request.");
 				}
 				else {
-					var random_index = Math.floor(Math.random() * conf.giphy_params.limit);
 					var responseObj = JSON.parse(body);
 					// console.log(responseObj.data);
 					if (responseObj.data.length) {
-						// console.log(random_index);
+						var random_index = Math.floor(Math.random() * responseObj.data.length);
+						console.log(random_index);
 						var response_url = responseObj.data[random_index].images.fixed_height.url;
 						callback(null, response_url);
 					} else {
@@ -42,6 +42,9 @@ var commands = {
 				}
 			}.bind(this));
 		}
+	},
+	"meme" : {
+
 	}
 }
 

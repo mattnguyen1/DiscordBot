@@ -1,3 +1,9 @@
 # Configs
 auth.json
 config.json
+
+# Node
+/node_modules
+.DS_STORE
+npm-debug.log
+/*.env
