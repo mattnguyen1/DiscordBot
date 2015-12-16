@@ -29,21 +29,16 @@ var commands = {
 					callback(new Error("Giphy error."), "Bad Request.");
 				}
 				else {
+					var random_index = Math.floor(Math.random() * conf.giphy_params.limit);
 					var responseObj = JSON.parse(body);
-					console.log(responseObj.data);
+					// console.log(responseObj.data);
 					if (responseObj.data.length) {
-						var response_url = responseObj.data[0].images.fixed_height.url;
+						// console.log(random_index);
+						var response_url = responseObj.data[random_index].images.fixed_height.url;
 						callback(null, response_url);
 					} else {
 						callback(null, "No results :(");
 					}
-
-					// console.log(responseObj.data[0])
-					// if(responseObj.data.length){
-					// 	func(responseObj.data[0].id);
-					// } else {
-					// 	func(undefined);
-					// }
 				}
 			}.bind(this));
 		}
