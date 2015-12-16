@@ -1,4 +1,4 @@
 # Basic Discord Bot
 ## Commands
-*Giphy Search*
+#####Giphy Search
 	<name-of-bot> gif <gif-query>
