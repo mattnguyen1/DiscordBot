@@ -1,23 +1,19 @@
 var Discord = require('discord.js');
 
 // Configs
-// var app = require('./app.json');
-var conf = require('./config.json');
+var conf 	= require('./config.json');
 
 // Dependencies
 var request = require('request');
-
-// Discord Bot
-var bot = new Discord.Client();
-var name = "";
-
-// FIX STUPID BUG
 var express = require('express');
+
+// Vars
+var bot 	= new Discord.Client();
+var name 	= "";
 var app     = express();
 
+// Heroku $PORT error fix
 app.set('port', (process.env.PORT || 5000));
-
-//For avoidong Heroku $PORT error
 app.get('/', function(request, response) {
     var result = 'App is running'
     response.send(result);
@@ -58,8 +54,23 @@ var commands = {
 			}.bind(this));
 		}
 	},
-	"meme" : {
+	"steven" : {
+		"protocol" : function(suffix, callback) {
+			var sfx_arr = suffix.split('"');
 
+			if (sfx_arr.length >= 3 && sfx_arr[1] == ' ') {
+				var topText = sfx_arr[0];
+				var bottomText = sfx_arr[2];
+				var request_url = conf.urls.meme + '?template_id' + ;
+
+				request_url += conf.meme_ids.steven
+				request_url += '&username=' + process.env.MEME_USER;
+				request_url += '&password=' + process.env.MEME_PASS;
+				request_url += '&text0=' + topText;
+				request_url += '&text1=' + bottomText;
+
+			}
+		}
 	}
 }
 

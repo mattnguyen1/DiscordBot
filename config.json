@@ -1,11 +1,16 @@
 {
 	"urls" : {
-		"giphy" : "http://api.giphy.com/v1/gifs/search"
+		"giphy" : "http://api.giphy.com/v1/gifs/search",
+		"meme" : "https://api.imgflip.com/caption_image"
 	},
 
 	"giphy_params" : {
 		"limit" : 25,
 		"fmt" : "json",
 		"api_key" : "dc6zaTOxFJmzC"
+	},
+
+	"meme_ids" : {
+		"steven" : "53497683"
 	}
 }
