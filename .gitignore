@@ -1,4 +1,5 @@
 # Configs
+.env
 
 # Node
 /node_modules

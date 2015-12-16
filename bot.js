@@ -41,7 +41,7 @@ var commands = {
 				}
 				else {
 					var responseObj = JSON.parse(body);
-					// console.log(responseObj.data);
+					console.log(responseObj.data);
 					if (responseObj.data.length) {
 						var random_index = Math.floor(Math.random() * responseObj.data.length);
 						console.log(random_index);
@@ -58,17 +58,33 @@ var commands = {
 		"protocol" : function(suffix, callback) {
 			var sfx_arr = suffix.split('"');
 
-			if (sfx_arr.length >= 3 && sfx_arr[1] == ' ') {
-				var topText = sfx_arr[0];
-				var bottomText = sfx_arr[2];
-				var request_url = conf.urls.meme + '?template_id' + ;
+			if (sfx_arr.length >= 4 && sfx_arr[2] == ' ') {
+				var topText = sfx_arr[1];
+				var bottomText = sfx_arr[3];
+				var request_url = conf.urls.meme + '?template_id=';
 
 				request_url += conf.meme_ids.steven
 				request_url += '&username=' + process.env.MEME_USER;
 				request_url += '&password=' + process.env.MEME_PASS;
 				request_url += '&text0=' + topText;
 				request_url += '&text1=' + bottomText;
-
+				console.log(request_url);
+				request(request_url, function (error, response, body) {
+					if (error || response.statusCode !== 200) {
+						callback(new Error("Imgflip error."), "Bad Request.");
+					}
+					else {
+						var responseObj = JSON.parse(body);
+						// console.log(responseObj.data);
+						if (responseObj.success) {
+							var response_url = responseObj.data.url;
+							console.log(response_url);
+							callback(null, response_url);
+						} else {
+							callback(null, "Bad meme :(");
+						}
+					}
+				}.bind(this));
 			}
 		}
 	}
