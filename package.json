@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mattnguyen1/DiscordBot#readme",
   "dependencies": {
-    "discord.js": "^5.1.0"
+    "discord.js": "^5.1.0",
+    "requests": "^0.1.7"
   }
 }
