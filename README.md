@@ -12,7 +12,6 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 - Have node.js installed
 - npm install
 - modify config.json to your preferences
--  
 
 # To Do:
 
