@@ -70,6 +70,18 @@ var commands = {
 	"meme" : {
 		"protocol" : function(suffix, callback) {
 			var sfx_arr = suffix.split('"');
+			var sfx_split_space = suffix.split(' ');
+			if (sfx_split_space[0].toLowerCase() == "help") {
+				var response = "List of meme templates: \n";
+				for (key in conf.meme_ids){
+					response += "\t" + key + "\n";
+				}
+				response += "\nUsage:\n";
+				response += "\t" + name + " meme meme_id \"<top-text>\" \"<bot-text>\"";
+				callback(null, response);
+				return;
+			}
+
 			var template_id = sfx_arr[0].trim();
 
 			if (sfx_arr.length >= 2) {
