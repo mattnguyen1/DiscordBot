@@ -1,18 +1,29 @@
 {
 	"urls" : {
 		"giphy" : "http://api.giphy.com/v1/gifs/search",
-		"meme" : "https://api.imgflip.com/caption_image",
+		"meme" 	: "https://api.imgflip.com/caption_image",
 		"Kappa" : "http://i.imgur.com/9JWyIBz.png"
 	},
 
 	"giphy_params" : {
-		"limit" : 25,
-		"fmt" : "json",
-		"api_key" : "dc6zaTOxFJmzC"
+		"limit" 	: 25,
+		"fmt" 		: "json",
+		"api_key" 	: "dc6zaTOxFJmzC"
 	},
 
 	"meme_ids" : {
-		"steven" : "53497683",
-		"Kappa" : "53589806"
+		"steven" 		: "53497683",
+		"Kappa"	 		: "53589806",
+		"boromir" 		: "61579",
+		"interesting" 	: "61532",
+		"fry" 			: "61520",
+		"fwp" 			: "61539",
+		"leo" 			: "5496396",
+		"badluck" 		: "61585",
+		"wonka" 		: "61582",
+		"success" 		: "61544",
+		"toohigh" 		: "61580",
+		"kd35"			: "15878567",
+		"aliens"		: "101470"
 	}
 }

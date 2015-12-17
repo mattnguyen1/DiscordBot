@@ -62,8 +62,25 @@ var commands = {
 				var top_text = sfx_arr[1];
 				var bot_text = sfx_arr[3];
 
-				imgflip(conf.meme_ids.steven, top_text, bot_text);
+				imgflip(conf.meme_ids.steven, top_text, bot_text, callback);
 				
+			}
+		}
+	},
+	"meme" : {
+		"protocol" : function(suffix, callback) {
+			var sfx_arr = suffix.split('"');
+			var template_id = sfx_arr[0].trim();
+
+			if (sfx_arr.length >= 2) {
+				var top_text = sfx_arr[1];
+				var bot_text = "";
+				// Optional top text only
+				if (sfx_arr.length >= 4 && sfx_arr[2] == ' ') {
+					bot_text = sfx_arr[3];
+				} 
+
+				imgflip(conf.meme_ids[template_id], top_text, bot_text, callback);		
 			}
 		}
 	}
@@ -144,6 +161,7 @@ function imgflip(template_id, top_text, bot_text, callback) {
 			if (responseObj.success) {
 				var response_url = responseObj.data.url;
 				console.log(response_url);
+				console.log(callback);
 				callback(null, response_url);
 			} else {
 				callback(null, "Bad meme :(");
