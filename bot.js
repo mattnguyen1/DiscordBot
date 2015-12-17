@@ -59,33 +59,20 @@ var commands = {
 			var sfx_arr = suffix.split('"');
 
 			if (sfx_arr.length >= 4 && sfx_arr[2] == ' ') {
-				var topText = sfx_arr[1];
-				var bottomText = sfx_arr[3];
-				var request_url = conf.urls.meme + '?template_id=';
+				var top_text = sfx_arr[1];
+				var bot_text = sfx_arr[3];
 
-				request_url += conf.meme_ids.steven
-				request_url += '&username=' + process.env.MEME_USER;
-				request_url += '&password=' + process.env.MEME_PASS;
-				request_url += '&text0=' + topText;
-				request_url += '&text1=' + bottomText;
-				console.log(request_url);
-				request(request_url, function (error, response, body) {
-					if (error || response.statusCode !== 200) {
-						callback(new Error("Imgflip error."), "Bad Request.");
-					}
-					else {
-						var responseObj = JSON.parse(body);
-						// console.log(responseObj.data);
-						if (responseObj.success) {
-							var response_url = responseObj.data.url;
-							console.log(response_url);
-							callback(null, response_url);
-						} else {
-							callback(null, "Bad meme :(");
-						}
-					}
-				}.bind(this));
+				imgflip(conf.meme_ids.steven, top_text, bot_text);
+				
 			}
+		}
+	}
+}
+
+var responses = {
+	"Kappa": {
+		"protocol": function(callback) {
+			callback(null, conf.urls.Kappa);
 		}
 	}
 }
@@ -123,6 +110,48 @@ function parseCommand(message, callback) {
 	}
 }
 
+function autoResponse(message, callback) {
+	var message_arr = message.content.split(' ');
+	var i;
+	for (i = 0; i < message_arr.length; i++) {
+		if (responses[message_arr[i]] != null) {
+			// If we need to deal with an error later, we can make
+			// some statements to deal with it, for now we just say null
+			responses[message_arr[i]].protocol(function(err, response) {
+				callback(null, response);
+			});
+		}
+	}
+}
+
+// Create imgflip meme
+function imgflip(template_id, top_text, bot_text, callback) {
+	var request_url = conf.urls.meme + '?template_id=';
+
+	request_url += template_id
+	request_url += '&username=' + process.env.MEME_USER;
+	request_url += '&password=' + process.env.MEME_PASS;
+	request_url += '&text0=' + top_text;
+	request_url += '&text1=' + bot_text;
+	console.log(request_url);
+	request(request_url, function (error, response, body) {
+		if (error || response.statusCode !== 200) {
+			callback(new Error("Imgflip error."), "Bad Request.");
+		}
+		else {
+			var responseObj = JSON.parse(body);
+			// console.log(responseObj.data);
+			if (responseObj.success) {
+				var response_url = responseObj.data.url;
+				console.log(response_url);
+				callback(null, response_url);
+			} else {
+				callback(null, "Bad meme :(");
+			}
+		}
+	}.bind(this));
+}
+
 // Bot initializiation
 bot.on("ready", function() {
 	name = bot.internal.user.username;
@@ -133,6 +162,13 @@ bot.on("message", function(message){
 	parseCommand(message, function respond(err, response) {
 		if (err) {
 			console.log(err);
+		} else {
+			bot.sendMessage(message.channel, response);
+		}
+	});
+	autoResponse(message, function autoRespond(err, response) {
+		if (err) {
+			console.log(err)
 		} else {
 			bot.sendMessage(message.channel, response);
 		}

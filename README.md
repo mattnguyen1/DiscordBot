@@ -1,6 +1,6 @@
 # Dank Discord Bot
 A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
-# Commands
+# Features
 #####Giphy Search
 	<name-of-bot> gif <gif-query>
 
@@ -16,7 +16,6 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 # To Do:
 
 - Finish imgflip meme generator
-- Make http://i.imgur.com/9JWyIBz.png into a response to Kappa
 - Create an option to use an auth.json instead of heroku env vars
 - Add join/leave server command
 - Add help command
