@@ -12,3 +12,12 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 - Have node.js installed
 - npm install
 - modify config.json to your preferences
+-  
+
+# To Do:
+
+- Finish imgflip meme generator
+- Make http://i.imgur.com/9JWyIBz.png into a meme
+- Create an option to use an auth.json instead of heroku env vars
+- Add join/leave server command
+- Add help command
