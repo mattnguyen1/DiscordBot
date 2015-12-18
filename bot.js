@@ -95,6 +95,28 @@ var commands = {
 				imgflip(conf.meme_ids[template_id], top_text, bot_text, callback);		
 			}
 		}
+	},
+	"join" : {
+		"protocol" : function(suffix, callback) {
+			bot.joinServer(suffix, function(err, server) {
+				if (err) {
+					callback(null, "Failed to join " + server + ".");
+				} else {
+					bot.sendMessage(server, "Hello!");
+					callback(null, "Succesfully joined " + server + ".");
+				}
+			});
+		}
+	},
+	"leave" : {
+		"protocol" : function(message, callback) {
+			var server = message.channel;
+			bot.leaveServer(server, function(err) {
+				if (err) {
+					callback(null, "It won't let me leave!");
+				}
+			});
+		}
 	}
 }
 
@@ -119,17 +141,26 @@ function parseCommand(message, callback) {
 		var split2 = message_content.indexOf(' ', split1+1);
 
 		if (commands[command] != null) {
-			var suffix = message_content.substring(split2+1);
-			console.log(command);
-			console.log(suffix);
+			if (split2 == -1) {
+				commands[command].protocol(message, function(err, response) {
+					if (err) {
+						callback(err, null);
+					} else {
+						callback(null, response);
+					}
+				});
+			} else {
+				var suffix = message_content.substring(split2+1);
+				if (suffix.split())
 
-			commands[command].protocol(suffix, function(err, response) {
-				if (err) {
-					callback(err, null);
-				} else {
-					callback(null, response);
-				}
-			});
+				commands[command].protocol(suffix, function(err, response) {
+					if (err) {
+						callback(err, null);
+					} else {
+						callback(null, response);
+					}
+				});
+			}
 		} else {
 			callback(new Error("Command is invalid."), null);
 		}
