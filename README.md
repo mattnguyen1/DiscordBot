@@ -7,6 +7,9 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 #####Meme Generator
 	<name-of-bot> meme help
 	<name-of-bot> meme <meme-id> <top-text> <bottom-text>
+
+#####Image Search
+	<name-of-bot> image <image-query>
 	
 #####Join Server
 	<name-of-bot> join <server-invite-link>
