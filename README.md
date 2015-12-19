@@ -4,8 +4,15 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 #####Giphy Search
 	<name-of-bot> gif <gif-query>
 
-#####The meme of Steven
-	<name-of-bot> steven <top-text> <bottom-text>
+#####Meme Generator
+	<name-of-bot> meme help
+	<name-of-bot> meme <meme-id> <top-text> <bottom-text>
+	
+#####Join Server
+	<name-of-bot> join <server-invite-link>
+	
+#####Leave Server
+	<name-of-bot> leave
 
 # To Run:
 
