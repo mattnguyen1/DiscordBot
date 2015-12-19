@@ -96,6 +96,11 @@ var commands = {
 			}
 		}
 	},
+	"image" : {
+		"protocol" : function(suffix, callback) {
+			google(suffix, callback);
+		}
+	},
 	"join" : {
 		"protocol" : function(suffix, callback) {
 			bot.joinServer(suffix, function(err, server) {
@@ -208,6 +213,43 @@ function imgflip(template_id, top_text, bot_text, callback) {
 				callback(null, response_url);
 			} else {
 				callback(null, "Bad meme :(");
+			}
+		}
+	}.bind(this));
+}
+
+// Google CSE
+function google(query, callback) {
+	var request_url = conf.urls.google + '?q=';
+
+	request_url += query;
+	request_url += '&key=' + process.env.IMG_KEY;
+	request_url += '&cx=' + process.env.IMG_CX;
+	request_url += '&searchType=' + conf.google_image_params['searchType'];
+	request_url += '&fileType=' + conf.google_image_params['fileType'];
+	request_url += '&alt=' + conf.google_image_params['alt'];
+
+	// console.log(conf.google_image_params);
+	// for (param in conf.google_image_params) {
+	// 	params += '&' + param + '=' + conf.google_image_params[param];
+	// }
+
+	console.log(request_url);
+	request(request_url, function (error, response, body) {
+		if (error || response.statusCode !== 200) {
+			callback(new Error("Google error."), "Bad Request.");
+		}
+		else {
+			var responseObj = JSON.parse(body);
+			// console.log(responseObj.data);
+			if (responseObj.items.length) {
+				var random_index = Math.floor(Math.random() * responseObj.items.length);
+				var response_url = responseObj.items[random_index].link;
+				console.log(response_url);
+				console.log(callback);
+				callback(null, response_url);
+			} else {
+				callback(null, "Bad image :(");
 			}
 		}
 	}.bind(this));

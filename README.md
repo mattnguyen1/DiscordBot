@@ -18,6 +18,5 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 - Create an option to use an auth.json instead of heroku env vars
 - Add help command
 - Add google search query
-- Add static image search
 - Add torrent link grabber (maybe)
 - RSS news feed (maybe with search query)

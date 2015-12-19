@@ -1,8 +1,9 @@
 {
 	"urls" : {
-		"giphy" : "http://api.giphy.com/v1/gifs/search",
+		"giphy"	: "http://api.giphy.com/v1/gifs/search",
 		"meme" 	: "https://api.imgflip.com/caption_image",
-		"Kappa" : "http://i.imgur.com/9JWyIBz.png"
+		"Kappa"	: "http://i.imgur.com/9JWyIBz.png",
+		"google" : "https://www.googleapis.com/customsearch/v1"
 	},
 
 	"giphy_params" : {
@@ -11,9 +12,15 @@
 		"api_key" 	: "dc6zaTOxFJmzC"
 	},
 
+	"google_image_params" : {
+		"searchType" 	: "image",
+		"fileType"		: "jpg",
+		"alt" 			: "json"
+	},
+
 	"meme_ids" : {
-		"steven" 		: "53497683",
-		"Kappa"	 		: "53589806",
+		"steven"		: "53497683",
+		"Kappa"			: "53589806",
 		"boromir" 		: "61579",
 		"interesting" 	: "61532",
 		"fry" 			: "61520",
