@@ -122,6 +122,18 @@ var commands = {
 				}
 			});
 		}
+	},
+	"help" : {
+		"protocol" : function(message, callback) {
+			callback(null,
+				"Here are some of the commands I can do!\n
+				\t gif <query>\n
+				\t image <query>\n
+				\t meme help\n
+				\t join <invite-link>\n
+				\t leave\n\n
+				See more about me at https://github.com/mattnguyen1/DiscordBot");
+		}
 	}
 }
 
@@ -249,7 +261,7 @@ function google(query, callback) {
 				console.log(callback);
 				callback(null, response_url);
 			} else {
-				callback(null, "Bad image :(");
+				callback(null, "No results :(");
 			}
 		}
 	}.bind(this));
