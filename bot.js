@@ -125,14 +125,14 @@ var commands = {
 	},
 	"help" : {
 		"protocol" : function(message, callback) {
-			callback(null,
-				"Here are some of the commands I can do!\n
-				\t gif <query>\n
-				\t image <query>\n
-				\t meme help\n
-				\t join <invite-link>\n
-				\t leave\n\n
-				See more about me at https://github.com/mattnguyen1/DiscordBot");
+			var response = "Here are some of the commands I can do!\n";
+			response += "\t gif <query>\n";
+			response +=  "\t image <query>\n";
+			response +=  "\t meme help\n";
+			response +=  "\t join <invite-link>\n";
+			response +=  "\t leave\n\n";
+			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
+			callback(null, response);
 		}
 	}
 }
