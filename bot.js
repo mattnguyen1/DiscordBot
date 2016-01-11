@@ -146,6 +146,9 @@ var slash_commands = {
 				callback(null,roll(message.author, 1, 100));
 			}
 			if (sfx_arr.length == 2) {
+				if (sfx_arr[1] == "rick") {
+					callback(null,"https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+				}
 				if (isPositiveInteger(sfx_arr[1])) {
 					callback(null,roll(message.author, sfx_arr[1]));
 				}
@@ -318,9 +321,6 @@ function roll(user, a, b) {
 		}
 	// 2 numbers given, roll from a to b, assuming a < b
 	} else {
-		if (a == "rick") {
-			return "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-		}
 		if (a > b) {
 			return "Rolls require the first number to be less than the second.";
 		}
