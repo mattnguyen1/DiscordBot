@@ -254,7 +254,7 @@ function google(query, callback) {
 		else {
 			var responseObj = JSON.parse(body);
 			// console.log(responseObj.data);
-			if (responseObj.items.length) {
+			if (responseObj.items and response.items.length) {
 				var random_index = Math.floor(Math.random() * responseObj.items.length);
 				var response_url = responseObj.items[random_index].link;
 				console.log(response_url);
