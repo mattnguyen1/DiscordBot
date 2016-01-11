@@ -318,6 +318,9 @@ function roll(user, a, b) {
 		}
 	// 2 numbers given, roll from a to b, assuming a < b
 	} else {
+		if (a == "rick") {
+			return "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+		}
 		if (a > b) {
 			return "Rolls require the first number to be less than the second.";
 		}
