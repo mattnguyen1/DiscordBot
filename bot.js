@@ -310,7 +310,7 @@ function isPositiveInteger(n) {
 
 function roll(user, a, b) {
 	if (b === undefined || b === null) {
-		var rand_roll = Math.floor(Math.random()*a);
+		var rand_roll = Math.floor(Math.random()*a)+1;
 		if (a > 0) {
 			return user + " rolls " + rand_roll + " (1-" + a + ")";
 		} else {
@@ -321,7 +321,7 @@ function roll(user, a, b) {
 		if (a > b) {
 			return "Rolls require the first number to be less than the second.";
 		}
-		var rand_roll = Math.floor(Math.random()*(b-a)+a);
+		var rand_roll = Math.floor(Math.random()*(b-a+1)+a);
 		return user + " rolls " + rand_roll + " (" + a + "-" + b + ")"; 
 	}
 }
