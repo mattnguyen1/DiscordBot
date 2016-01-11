@@ -6,6 +6,7 @@ var conf 	= require('./config.json');
 // Dependencies
 var request = require('request');
 var express = require('express');
+var helpers = require('./helpers.js');
 
 // Vars
 var bot 	= new Discord.Client();
@@ -137,6 +138,24 @@ var commands = {
 	}
 }
 
+var slash_commands = {
+	"roll" : {
+		"protocol" : function(message, callback) {
+			var sfx_arr = message.content.split(' ');
+			if (sfx_arr.length == 1) {
+				callback(null,helpers.roll(message.author, 1, 100));
+			}
+			if (sfx_arr.length == 2) {
+				if (isPositiveInteger(sfx_arr[1])) {
+					callback(null,helpers.roll(message.author, sfx_arr[1]));
+				}
+			} else if (sfx_arr.length == 3) {
+				callback(null,helpers.roll(message.author, sfx_arr[1], sfx_arr[2]));
+			}
+		}
+	}
+}
+
 var responses = {
 	"Kappa": {
 		"protocol": function(callback) {
@@ -168,8 +187,6 @@ function parseCommand(message, callback) {
 				});
 			} else {
 				var suffix = message_content.substring(split2+1);
-				if (suffix.split())
-
 				commands[command].protocol(suffix, function(err, response) {
 					if (err) {
 						callback(err, null);
@@ -184,6 +201,22 @@ function parseCommand(message, callback) {
 	// Throw an error if the request is not valid
 	} else {
 		callback(new Error("Not a request."), null);
+	}
+}
+
+function parseSlash(message, callback) {
+	var first = message.content.split(' ')[0];
+	if (first.substring(0,1) == '/') {
+		var command = first.substring(1);
+		if (slash_commands[command] != null) {
+			slash_commands[command].protocol(message, function(err, response) {
+				if (err) {
+					callback(err, null);
+				} else {
+					callback(null, response);
+				}
+			});
+		}
 	}
 }
 
@@ -261,6 +294,8 @@ function google(query, callback) {
 					console.log(response_url);
 					console.log(callback);
 					callback(null, response_url);
+				} else {
+					callback(null, "No results :(");
 				}
 			} else {
 				callback(null, "No results :(");
@@ -277,6 +312,13 @@ bot.on("ready", function() {
 // Bot responses
 bot.on("message", function(message){
 	parseCommand(message, function respond(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			bot.sendMessage(message.channel, response);
+		}
+	});
+	parseSlash(message, function respond(err, response) {
 		if (err) {
 			console.log(err);
 		} else {
