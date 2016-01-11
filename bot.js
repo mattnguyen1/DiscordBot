@@ -254,12 +254,14 @@ function google(query, callback) {
 		else {
 			var responseObj = JSON.parse(body);
 			// console.log(responseObj.data);
-			if (responseObj.items && response.items.length) {
-				var random_index = Math.floor(Math.random() * responseObj.items.length);
-				var response_url = responseObj.items[random_index].link;
-				console.log(response_url);
-				console.log(callback);
-				callback(null, response_url);
+			if (responseObj.items) {
+				if (responseObj.items.length) {
+					var random_index = Math.floor(Math.random() * responseObj.items.length);
+					var response_url = responseObj.items[random_index].link;
+					console.log(response_url);
+					console.log(callback);
+					callback(null, response_url);
+				}
 			} else {
 				callback(null, "No results :(");
 			}
