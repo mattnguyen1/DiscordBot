@@ -10,7 +10,10 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 
 #####Image Search
 	<name-of-bot> image <image-query>
-	
+
+#####Roll
+	/roll <lower num (optional)> <higher num (optional)>
+
 #####Join Server
 	<name-of-bot> join <server-invite-link>
 	
