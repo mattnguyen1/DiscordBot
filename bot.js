@@ -146,7 +146,7 @@ var slash_commands = {
 				callback(null,helpers.roll(message.author, 1, 100));
 			}
 			if (sfx_arr.length == 2) {
-				if (isPositiveInteger(sfx_arr[1])) {
+				if (helpers.isPositiveInteger(sfx_arr[1])) {
 					callback(null,helpers.roll(message.author, sfx_arr[1]));
 				}
 			} else if (sfx_arr.length == 3) {
