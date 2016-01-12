@@ -13,6 +13,9 @@ var bot 	= new Discord.Client();
 var name 	= "";
 var app     = express();
 
+// Bools
+var sfw		= false;
+
 // Heroku $PORT error fix
 app.set('port', (process.env.PORT || 5000));
 app.get('/', function(request, response) {
@@ -24,13 +27,16 @@ app.get('/', function(request, response) {
 
 var commands = {
 	"gif" : {
-		"protocol" : function(suffix, callback) {
+		"protocol" : function(options, suffix, callback) {
 			var query = '&q=' + suffix.split(' ').join('+');
 			var params = ''
 			for (param in conf.giphy_params) {
 				params += '&' + param + '=' + conf.giphy_params[param];
 			}
 			params += '&api_key=' + process.env.GIPHY_KEY;
+			if (options['sfw']) {
+				params += '&rating=pg-13';
+			}
 
 			var request_url = conf.urls.giphy + '?' + query + params;
 			request(request_url, function (error, response, body) {
@@ -42,10 +48,10 @@ var commands = {
 				}
 				else {
 					var responseObj = JSON.parse(body);
-					console.log(responseObj.data);
+					// console.log(responseObj.data);
 					if (responseObj.data.length) {
 						var random_index = Math.floor(Math.random() * responseObj.data.length);
-						console.log(random_index);
+						// console.log(random_index);
 						var response_url = responseObj.data[random_index].images.fixed_height.url;
 						callback(null, response_url);
 					} else {
@@ -55,21 +61,8 @@ var commands = {
 			}.bind(this));
 		}
 	},
-	"steven" : {
-		"protocol" : function(suffix, callback) {
-			var sfx_arr = suffix.split('"');
-
-			if (sfx_arr.length >= 4 && sfx_arr[2] == ' ') {
-				var top_text = sfx_arr[1];
-				var bot_text = sfx_arr[3];
-
-				imgflip(conf.meme_ids.steven, top_text, bot_text, callback);
-				
-			}
-		}
-	},
 	"meme" : {
-		"protocol" : function(suffix, callback) {
+		"protocol" : function(options, suffix, callback) {
 			var sfx_arr = suffix.split('"');
 			var sfx_split_space = suffix.split(' ');
 			if (sfx_split_space[0].toLowerCase() == "help") {
@@ -98,12 +91,12 @@ var commands = {
 		}
 	},
 	"image" : {
-		"protocol" : function(suffix, callback) {
+		"protocol" : function(options, suffix, callback) {
 			google(suffix, callback);
 		}
 	},
 	"join" : {
-		"protocol" : function(suffix, callback) {
+		"protocol" : function(options, suffix, callback) {
 			bot.joinServer(suffix, function(err, server) {
 				if (err) {
 					callback(null, "Failed to join " + server + ".");
@@ -115,7 +108,7 @@ var commands = {
 		}
 	},
 	"leave" : {
-		"protocol" : function(message, callback) {
+		"protocol" : function(options, message, callback) {
 			var server = message.channel;
 			bot.leaveServer(server, function(err) {
 				if (err) {
@@ -125,7 +118,7 @@ var commands = {
 		}
 	},
 	"help" : {
-		"protocol" : function(message, callback) {
+		"protocol" : function(options, message, callback) {
 			var response = "Here are some of the commands I can do!\n";
 			response += "\t gif <query>\n";
 			response +=  "\t image <query>\n";
@@ -169,19 +162,40 @@ var responses = {
 
 function parseCommand(message, callback) {
 	var message_content = message.content;
-	var first_word = message_content.split(' ')[0];
+	var message_arr = message_content.split(' ');
+	var first_word = message_arr[0].toLowerCase();
+	var options = {};
 
 	// Accept command if the first word is a name
-	if (first_word === name) {
-		var command = message_content.split(' ')[1];
+	if (first_word === name.toLowerCase()) {
+		// No commands
+		if (message_arr.length == 1) {
+			callback(null,null);
+			return;
+		}
+		message_arr.shift();
 
-		// Terrible way to parse a query
-		var split1 = message_content.indexOf(' ');
-		var split2 = message_content.indexOf(' ', split1+1);
+		// Options parse
+		while (message_arr[0].substr(0,1) == '-') {
+			console.log(message_arr[0].substr(1));
+			if (message_arr[0].substr(1).toLowerCase() == 'sfw') {
+				options['sfw'] = true;
+			} else {
+				callback(null, message_arr[0].substr(1) + " is not a valid option.");
+			}
+			message_arr.shift();
+		}
 
+		// No actual command
+		if (message_arr.length == 0) {
+			callback(null,null);
+		}
+		var command = message_arr.shift();
+		
 		if (commands[command] != null) {
-			if (split2 == -1) {
-				commands[command].protocol(message, function(err, response) {
+			// Commands that take no suffix
+			if (message_arr.length == 0) {
+				commands[command].protocol(options, message, function(err, response) {
 					if (err) {
 						callback(err, null);
 					} else {
@@ -189,8 +203,8 @@ function parseCommand(message, callback) {
 					}
 				});
 			} else {
-				var suffix = message_content.substring(split2+1);
-				commands[command].protocol(suffix, function(err, response) {
+				var suffix = message_arr.join(" ");
+				commands[command].protocol(options, suffix, function(err, response) {
 					if (err) {
 						callback(err, null);
 					} else {
@@ -203,7 +217,7 @@ function parseCommand(message, callback) {
 		}
 	// Throw an error if the request is not valid
 	} else {
-		callback(new Error("Not a request."), null);
+		callback(null, null);
 	}
 }
 
@@ -282,7 +296,7 @@ function google(query, callback) {
 	// 	params += '&' + param + '=' + conf.google_image_params[param];
 	// }
 
-	console.log(request_url);
+	// console.log(request_url);
 	request(request_url, function (error, response, body) {
 		if (error || response.statusCode !== 200) {
 			callback(new Error("Google error."), "Bad Request.");
@@ -294,8 +308,8 @@ function google(query, callback) {
 				if (responseObj.items.length) {
 					var random_index = Math.floor(Math.random() * responseObj.items.length);
 					var response_url = responseObj.items[random_index].link;
-					console.log(response_url);
-					console.log(callback);
+					// console.log(response_url);
+					// console.log(callback);
 					callback(null, response_url);
 				} else {
 					callback(null, "No results :(");
@@ -332,6 +346,7 @@ function roll(user, a, b) {
 // Bot initializiation
 bot.on("ready", function() {
 	name = bot.internal.user.username;
+	console.log(name + " is online.");
 });
 
 // Bot responses
