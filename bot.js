@@ -36,9 +36,12 @@ var commands = {
 			params += '&api_key=' + process.env.GIPHY_KEY;
 			if (options['sfw']) {
 				params += '&rating=pg-13';
+			} else if (options['nsfw']) {
+				params += '&rating=r';
 			}
 
 			var request_url = conf.urls.giphy + '?' + query + params;
+			console.log(request_url);
 			request(request_url, function (error, response, body) {
 				//console.log(arguments)
 				if (error || response.statusCode !== 200) {
@@ -48,7 +51,7 @@ var commands = {
 				}
 				else {
 					var responseObj = JSON.parse(body);
-					// console.log(responseObj.data);
+					console.log(responseObj.data.rating);
 					if (responseObj.data.length) {
 						var random_index = Math.floor(Math.random() * responseObj.data.length);
 						// console.log(random_index);
@@ -180,6 +183,8 @@ function parseCommand(message, callback) {
 			console.log(message_arr[0].substr(1));
 			if (message_arr[0].substr(1).toLowerCase() == 'sfw') {
 				options['sfw'] = true;
+			} else if (message_arr[0].substr(1).toLowerCase() == 'nsfw') {
+				options['nsfw'] = true;
 			} else {
 				callback(null, message_arr[0].substr(1) + " is not a valid option.");
 			}
