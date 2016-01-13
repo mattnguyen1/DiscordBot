@@ -98,6 +98,11 @@ var commands = {
 			google(suffix, callback);
 		}
 	},
+	"weather" : {
+		"protocol" : function(options, suffix, callback) {
+			weather(suffix, callback);
+		}
+	},
 	"join" : {
 		"protocol" : function(options, suffix, callback) {
 			bot.joinServer(suffix, function(err, server) {
@@ -321,6 +326,34 @@ function google(query, callback) {
 				}
 			} else {
 				callback(null, "No results :(");
+			}
+		}
+	}.bind(this));
+}
+
+function weather(query, callback) {
+	var request_url = conf.urls.weatherstart 
+		+ process.env.WEATHER 
+		+ conf.urls.weatherend
+		+ query
+		+ '.json';
+	console.log(request_url);
+
+	request(request_url, function (error, response, body) {
+		if (error || response.statusCode !== 200) {
+			callback(new Error("Wunderground error."), "Bad Request.");
+		}
+		else {
+			var responseObj = JSON.parse(body);
+			if (responseObj.location != undefined) {
+				var cityweather = responseObj.current_observation;
+				var cityloc = responseObj.location;
+				var response = "It is currently " + cityweather.temperature_string
+					+ " in " + cityloc.city + ".\n"
+					+ "The weather there is currently " + cityweather.weather + ".";
+				callback(null, response);
+			} else {
+				callback(null, "No city :(");
 			}
 		}
 	}.bind(this));
