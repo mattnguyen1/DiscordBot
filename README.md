@@ -3,13 +3,25 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 # Features
 #####Giphy Search
 	<name-of-bot> gif <gif-query>
+	
+	Using https://github.com/Giphy/GiphyAPI
 
 #####Meme Generator
 	<name-of-bot> meme help
 	<name-of-bot> meme <meme-id> <top-text> <bottom-text>
+	
+	Using https://api.imgflip.com/
 
 #####Image Search
 	<name-of-bot> image <image-query>
+	
+	Using https://developers.google.com/custom-search/json-api/v1/using_rest
+	
+#####Weather
+	<name-of-bot> weather <weather-query>
+	
+	Query can be US state/city, US zipcode, country/city, (latitude,longitude), airport code.
+	Using http://www.wunderground.com/weather/api/d/docs
 
 #####Roll
 	/roll <lower num (optional)> <higher num (optional)>
