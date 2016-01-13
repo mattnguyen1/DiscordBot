@@ -343,7 +343,7 @@ function roll(user, a, b) {
 		if (a > b) {
 			return "Rolls require the first number to be less than the second.";
 		}
-		var rand_roll = Math.floor(Math.random()*(b-a+1)+a);
+		var rand_roll = Math.floor(Math.random()*(b-a+1))+parseInt(a);
 		return user + " rolls " + rand_roll + " (" + a + "-" + b + ")"; 
 	}
 }
