@@ -128,11 +128,13 @@ var commands = {
 	"help" : {
 		"protocol" : function(options, message, callback) {
 			var response = "Here are some of the commands I can do!\n";
-			response += "\t gif <query>\n";
-			response +=  "\t image <query>\n";
-			response +=  "\t meme help\n";
-			response +=  "\t join <invite-link>\n";
-			response +=  "\t leave\n\n";
+			response +=  "\t" + name + " gif <query>\n";
+			response +=  "\t" + name + " image <query>\n";
+			response +=  "\t" + name + " meme help\n";
+			response +=  "\t" + name + " weather <zipcode>\n";
+			response +=  "\t" + name + " join <invite-link>\n";
+			response +=  "\t" + name + " leave\n";
+			response +=  "\t /roll <lower (optional)> <higher (optional)>\n\n";
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
 			callback(null, response);
 		}
