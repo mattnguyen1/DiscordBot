@@ -1,4 +1,4 @@
-# Dank Discord Bot
+# Discord Bot
 A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
 # Features
 #####Giphy Search
