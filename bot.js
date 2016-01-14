@@ -4,12 +4,14 @@ var Discord = require('discord.js');
 var conf 	= require('./config.json');
 
 // Dependencies
-var request = require('request');
-var express = require('express');
-var helpers = require('./helpers.js');
+var request 		= require('request');
+var express 		= require('express');
+var wolframClient 	= require('node-wolfram')
+var helpers 		= require('./helpers.js');
 
 // Vars
 var bot 	= new Discord.Client();
+var wolfram = new wolframClient(process.env.WOLFRAM_KEY);
 var name 	= "";
 var app     = express();
 
@@ -101,6 +103,30 @@ var commands = {
 	"weather" : {
 		"protocol" : function(options, suffix, callback) {
 			weather(suffix, callback);
+		}
+	},
+	"wolfram" : {
+		"protocol" : function(options, suffix, callback) {
+			wolfram.query(suffix, function(err, result) {
+				if (err) {
+					callback(null, "Bad query.");
+				} else {
+					var response = "";
+					for(var a=0; a<result.queryresult.pod.length && a < 5; a++) {
+						var pod = result.queryresult.pod[a];
+						response += "**" + pod.$.title + "**: \n";
+						for(var b=0; b<pod.subpod.length; b++) {
+							var subpod = pod.subpod[b];
+							for(var c=0; c<subpod.plaintext.length; c++) {
+								var text = subpod.plaintext[c];
+								response += '\t' + text + "\n";
+							}
+						}
+					}
+					response += "\nSee the full answer at " + conf.urls.wolfram + suffix;
+					callback(null, response);
+				}
+			});
 		}
 	},
 	"join" : {

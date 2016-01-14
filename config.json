@@ -5,7 +5,8 @@
 		"Kappa"	: "http://i.imgur.com/9JWyIBz.png",
 		"google" : "https://www.googleapis.com/customsearch/v1",
 		"weatherstart" : "http://api.wunderground.com/api/",
-		"weatherend" : "/forecast/geolookup/conditions/q/"
+		"weatherend" : "/forecast/geolookup/conditions/q/",
+		"wolfram" : "http://www.wolframalpha.com/input/?i="
 	},
 
 	"giphy_params" : {
