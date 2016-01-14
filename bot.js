@@ -112,6 +112,15 @@ var commands = {
 					callback(null, "Bad query.");
 				} else {
 					var response = "";
+					if (result.queryresult == undefined) {
+						callback(null, "Bad query.");
+						return;
+					}
+					if (result.queryresult.pod == undefined) {
+						console.log(result.queryresult);
+						callback(null, "Bad query.");
+						return;
+					}
 					for(var a=0; a<result.queryresult.pod.length && a < 5; a++) {
 						var pod = result.queryresult.pod[a];
 						response += "**" + pod.$.title + "**: \n";
