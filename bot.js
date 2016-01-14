@@ -123,7 +123,7 @@ var commands = {
 							}
 						}
 					}
-					response += "\nSee the full answer at " + conf.urls.wolfram + suffix;
+					response += "\nSee the full answer at " + conf.urls.wolfram + encodeURIComponent(suffix);
 					callback(null, response);
 				}
 			});
