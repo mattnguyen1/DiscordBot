@@ -202,6 +202,11 @@ var responses = {
 		"protocol": function(callback) {
 			callback(null, conf.urls.Kappa);
 		}
+	},
+	"lategong" : {
+		"protocol" : function(callback) {
+			callback(null, conf.urls.leigong);
+		}
 	}
 }
 
