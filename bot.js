@@ -456,9 +456,12 @@ bot.on("message", function(message){
 
 // Attempt login
 var clientConnected = false;
+var attemptedCount = 0;
 while (!clientConnected) {
 	bot.login(process.env.EMAIL, process.env.PASSWORD, function(err, token) {
+		console.log("Login attempt " + attemptedCount);
 		if (err) {
+			attemptedCount++;
 			clientConnected = false;
 		} else {
 			clientConnected = true;
