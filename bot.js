@@ -17,15 +17,11 @@ var app     = express();
 
 // Bools
 var sfw		= false;
+var isListeningOnPort = false;
 
+console.log("Starting Discord bot script.");
 // Heroku $PORT error fix
-app.set('port', (process.env.PORT || 5000));
-app.get('/', function(request, response) {
-    var result = 'App is running'
-    response.send(result);
-}).listen(app.get('port'), function() {
-    console.log('App is running, server is listening on port ', app.get('port'));
-});
+
 
 var commands = {
 	"gif" : {
@@ -454,17 +450,16 @@ bot.on("message", function(message){
 	});
 });
 
+app.set('port', (process.env.PORT || 5000));
+app.get('/', function(request, response) {
+    var result = 'App is running'
+    response.send(result);
+}).listen(app.get('port'), function() {
+	isListeningOnPort = true;
+    console.log('App is running, server is listening on port ', app.get('port'));
+	bot.login(process.env.EMAIL, process.env.PASSWORD);
+});
+
 // Attempt login
-var clientConnected = false;
-var attemptedCount = 0;
-while (!clientConnected) {
-	bot.login(process.env.EMAIL, process.env.PASSWORD, function(err, token) {
-		console.log("Login attempt " + attemptedCount);
-		if (err) {
-			attemptedCount++;
-			clientConnected = false;
-		} else {
-			clientConnected = true;
-		}
-	});
-}
+// console.log(clientConnected);
+// console.log(isListeningOnPort);
