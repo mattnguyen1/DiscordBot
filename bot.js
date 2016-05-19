@@ -454,4 +454,14 @@ bot.on("message", function(message){
 	});
 });
 
-bot.login(process.env.EMAIL, process.env.PASSWORD);
+// Attempt login
+var clientConnected = false;
+while (!clientConnected) {
+	bot.login(process.env.EMAIL, process.env.PASSWORD, function(err, token) {
+		if (err) {
+			clientConnected = false;
+		} else {
+			clientConnected = true;
+		}
+	});
+}
