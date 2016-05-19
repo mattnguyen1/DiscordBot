@@ -8,6 +8,7 @@ var request 		= require('request');
 var express 		= require('express');
 var wolframClient 	= require('node-wolfram')
 var helpers 		= require('./helpers.js');
+var exec 			= require('child_process').exec;
 
 // Vars
 var bot 	= new Discord.Client();
@@ -168,6 +169,32 @@ var commands = {
 			response +=  "\t /roll <lower (optional)> <higher (optional)>\n\n";
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
 			callback(null, response);
+		}
+	},
+	"logs" : {
+		"protocol" : function(options, message, callback) {
+			var child;
+			child = exec("heroku logs -n 10", function(error, stdout, stderr) {
+				// console.log('stdout: ' + stdout);
+				// console.log('stderr: ' + stderr);
+				if (error !== null) {
+					console.log('exec error: ' + error);
+				}
+				callback(null, stdout);
+			});
+		}	
+	},
+	"update" : {
+		"protocol" : function(options, message, callback) {
+			var child;
+			child = exec("git pull", function(error, stdout, stderr) {
+				// console.log('stdout: ' + stdout);
+				// console.log('stderr: ' + stderr);
+				if (error !== null) {
+					console.log('exec error: ' + error);
+				}
+				callback(null, stdout);
+			});
 		}
 	}
 }
@@ -431,21 +458,35 @@ bot.on("message", function(message){
 		if (err) {
 			console.log(err);
 		} else {
-			bot.sendMessage(message.channel, response);
+			if (response !== null) {
+				bot.sendMessage(message.channel, response, function(err, message) {
+					if (err) {
+						console.log("parse command error: " +err);
+					}
+				});
+			}
 		}
 	});
 	parseSlash(message, function respond(err, response) {
 		if (err) {
 			console.log(err);
 		} else {
-			bot.sendMessage(message.channel, response);
+			bot.sendMessage(message.channel, response, function(err, message) {
+				if (err) {
+					console.log("parse slash error: " +err);
+				}
+			});
 		}
 	});
 	autoResponse(message, function autoRespond(err, response) {
 		if (err) {
 			console.log(err)
 		} else {
-			bot.sendMessage(message.channel, response);
+			bot.sendMessage(message.channel, response, function(err, message) {
+				if (err) {
+					console.log("auto respond error: " +err);
+				}
+			});
 		}
 	});
 });
