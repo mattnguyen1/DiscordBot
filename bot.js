@@ -170,32 +170,6 @@ var commands = {
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
 			callback(null, response);
 		}
-	},
-	"logs" : {
-		"protocol" : function(options, message, callback) {
-			var child;
-			child = exec("heroku logs -n 10", function(error, stdout, stderr) {
-				// console.log('stdout: ' + stdout);
-				// console.log('stderr: ' + stderr);
-				if (error !== null) {
-					console.log('exec error: ' + error);
-				}
-				callback(null, stdout);
-			});
-		}	
-	},
-	"update" : {
-		"protocol" : function(options, message, callback) {
-			var child;
-			child = exec("git pull", function(error, stdout, stderr) {
-				// console.log('stdout: ' + stdout);
-				// console.log('stderr: ' + stderr);
-				if (error !== null) {
-					console.log('exec error: ' + error);
-				}
-				callback(null, stdout);
-			});
-		}
 	}
 }
 
@@ -495,12 +469,9 @@ app.set('port', (process.env.PORT || 5000));
 app.get('/', function(request, response) {
     var result = 'App is running'
     response.send(result);
-}).listen(app.get('port'), function() {
-	isListeningOnPort = true;
-    console.log('App is running, server is listening on port ', app.get('port'));
-	bot.login(process.env.EMAIL, process.env.PASSWORD);
-});
+}).listen(app.get('port'));
 
+bot.login(process.env.EMAIL, process.env.PASSWORD);
 // Attempt login
 // console.log(clientConnected);
 // console.log(isListeningOnPort);
