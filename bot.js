@@ -22,7 +22,7 @@ var isListeningOnPort = false;
 
 console.log("Starting Discord bot script.");
 // Heroku $PORT error fix
-app.set('port', (process.env.PORT || 5000));
+// app.set('port', (process.env.PORT || 5000));
 app.get('/', function(request, response) {
     var result = 'App is running'
     response.send(result);
@@ -479,6 +479,3 @@ app.get('/', function(request, response) {
 }).listen(app.get('port'));
 
 bot.login(process.env.EMAIL, process.env.PASSWORD);
-// Attempt login
-// console.log(clientConnected);
-// console.log(isListeningOnPort);
