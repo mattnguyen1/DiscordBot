@@ -36,6 +36,7 @@ var commands = {
 	"gif" : {
 		run: (options, suffix, callback) => {
 			let requestParams = {
+				url: conf.urls.giphy,
 				qs: {
 					q: suffix,
 					limit: 25,
