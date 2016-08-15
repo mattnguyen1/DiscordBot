@@ -40,7 +40,7 @@ var commands = {
 					q: suffix,
 					limit: 25,
 					fmt: "json",
-					api_key: process.nev.GIPHY_KEY,
+					api_key: process.env.GIPHY_KEY,
 					rating: options['nsfw'] ? 'r' : 'pg-13'
 				}
 			};
