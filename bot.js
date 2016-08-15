@@ -35,23 +35,17 @@ app.get('/', function(request, response) {
 var commands = {
 	"gif" : {
 		run: (options, suffix, callback) => {
-			let query = '&q=' + suffix.split(' ').join('+');
-			let params = ''
-			for (param in conf.giphy_params) {
-				params += '&' + param + '=' + conf.giphy_params[param];
-			}
+			let requestParams = {
+				qs: {
+					q: suffix,
+					limit: 25,
+					fmt: "json",
+					api_key: process.nev.GIPHY_KEY,
+					rating: options['nsfw'] ? 'r' : 'pg-13'
+				}
+			};
 
-
-			params += '&api_key=' + process.env.GIPHY_KEY;
-			if (options['sfw']) {
-				params += '&rating=pg-13';
-			} else if (options['nsfw']) {
-				params += '&rating=r';
-			}
-
-			let request_url = conf.urls.giphy + '?' + query + params;
-			console.log(request_url);
-			request(request_url, (error, response, body) => {
+			request(requestParams, (error, response, body) => {
 				//console.log(arguments)
 				if (error || response.statusCode !== 200) {
 					console.error("giphy: Got error: " + body);
