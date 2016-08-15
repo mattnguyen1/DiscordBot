@@ -6,17 +6,22 @@ let Discord = require('discord.js');
 let conf 	= require('./config.json');
 
 // Dependencies
+let jsdom			= require('jsdom');
+let url 			= require('url');
 let request 		= require('request');
+let redis			= require('redis');
 let express 		= require('express');
 let wolframClient 	= require('node-wolfram')
 let helpers 		= require('./helpers.js');
 let exec 			= require('child_process').exec;
 
 // Vars
-let bot 	= new Discord.Client();
-let wolfram = new wolframClient(process.env.WOLFRAM_KEY);
-let name 	= "";
-let app     = express();
+let bot 		= new Discord.Client();
+let wolfram 	= new wolframClient(process.env.WOLFRAM_KEY);
+let name 		= "";
+let redisURL 	= url.parse(process.env.REDIS_URL)
+let redisClient = redis.createClient(redisURL.port, redisURL.hostname);
+let app     	= express();
 
 // Bools
 let sfw		= false;
@@ -30,6 +35,16 @@ app.get('/', function(request, response) {
     response.send(result);
 }).listen(app.get('port'), function() {
     console.log('App is running, server is listening on port ', app.get('port'));
+});
+
+// Redis
+redisClient.auth(redisURL.auth.split(':')[1], (err) => {
+	if (err) {
+		console.log("Redis auth error: " + err);
+	}
+});
+redisClient.on("error", function (err) {
+    console.log("Redis Error " + err);
 });
 
 var commands = {
@@ -137,26 +152,46 @@ var commands = {
 			});
 		}
 	},
-	"join" : {
+	"wcl": {
 		run: (options, suffix, callback) => {
-			bot.joinServer(suffix, (err, server) => {
-				if (err) {
-					callback(null, "Failed to join " + server + ".");
-					return
-				}
-				bot.sendMessage(server, "Hello!");
-				callback(null, "Succesfully joined " + server + ".");
+			if (options['setalias']) {
+				let suffix_arr = suffix.split(' ');
+				redisClient.hset("wcl", suffix_arr[0], suffix_arr[1]);
+				callback(null, "Set " + suffix_arr[0] + " as " + suffix_arr[1]);
+				return;
+			}
+			redisClient.hget("wcl", suffix, (err, value) => {
+				jsdom.env(
+					conf.urls.wcl + value,
+					["http://code.jquery.com/jquery.js"],
+					(err, window) => {
+						if (window.$("tr td a") && window.$("tr td a")[0]) {
+							callback(null, window.$("tr td a")[0].href);	
+							return;		  		
+						} else {
+							callback(null, "No logs found :(");
+						}
+					}
+				);
+			})
+		}
+	},
+	"redis-hgetall": {
+		run: (options, suffix, callback) => {
+			redisClient.hgetall(suffix, (err, obj) => {
+			    console.log(obj);
 			});
 		}
 	},
-	"leave" : {
-		run: (options, message, callback) => {
-			let server = message.channel;
-			bot.leaveServer(server, (err) => {
-				if (err) {
-					callback(null, "It won't let me leave!");
-				}
-			});
+	"get-alias": {
+		run: (options, suffix, callback) => {
+			let suffix_arr = suffix.split(' ');
+			let hash = suffix_arr[0];
+			let key = suffix_arr[1];
+			redisClient.hget(hash, key, (err, value) => {
+				console.log(value);
+				callback(null, value);
+			})
 		}
 	},
 	"help" : {
@@ -166,9 +201,7 @@ var commands = {
 			response +=  "\t" + name + " image <query>\n";
 			response +=  "\t" + name + " meme help\n";
 			response +=  "\t" + name + " weather <zipcode>\n";
-			response +=  "\t" + name + " join <invite-link>\n";
 			response +=	 "\t" + name + " wolfram <query>\n";
-			response +=  "\t" + name + " leave\n";
 			response +=  "\t /roll <lower (optional)> <higher (optional)>\n\n";
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
 			callback(null, response);
