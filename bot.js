@@ -38,6 +38,8 @@ var commands = {
 			for (param in conf.giphy_params) {
 				params += '&' + param + '=' + conf.giphy_params[param];
 			}
+
+
 			params += '&api_key=' + process.env.GIPHY_KEY;
 			if (options['sfw']) {
 				params += '&rating=pg-13';
@@ -410,7 +412,7 @@ function weather(query, callback) {
 		+ conf.urls.weatherend
 		+ query + '.json';
 
-	request(request_url, function (error, response, body) {
+	request(request_url, (error, response, body) => {
 		if (error || response.statusCode !== 200) {
 			callback(new Error("Wunderground error."), "Bad Request.");
 		}
@@ -427,7 +429,7 @@ function weather(query, callback) {
 				callback(null, "No city :(");
 			}
 		}
-	}.bind(this));
+	});
 }
 
 function isPositiveInteger(n) {
