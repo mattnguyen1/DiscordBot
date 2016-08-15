@@ -21,7 +21,6 @@
     "express": "^4.13.3",
     "node-wolfram": "0.0.1",
     "request": "^2.67.0",
-    "requests": "^0.1.7",
-    "simple-oauth2": "^0.8.0"
+    "requests": "^0.1.7"
   }
 }

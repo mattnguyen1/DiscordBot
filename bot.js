@@ -1,30 +1,30 @@
-var Discord = require('discord.js');
+let Discord = require('discord.js');
 
 // Configs
-var conf 	= require('./config.json');
+let conf 	= require('./config.json');
 
 // Dependencies
-var request 		= require('request');
-var express 		= require('express');
-var wolframClient 	= require('node-wolfram')
-var helpers 		= require('./helpers.js');
-var exec 			= require('child_process').exec;
+let request 		= require('request');
+let express 		= require('express');
+let wolframClient 	= require('node-wolfram')
+let helpers 		= require('./helpers.js');
+let exec 			= require('child_process').exec;
 
 // Vars
-var bot 	= new Discord.Client();
-var wolfram = new wolframClient(process.env.WOLFRAM_KEY);
-var name 	= "";
-var app     = express();
+let bot 	= new Discord.Client();
+let wolfram = new wolframClient(process.env.WOLFRAM_KEY);
+let name 	= "";
+let app     = express();
 
 // Bools
-var sfw		= false;
-var isListeningOnPort = false;
+let sfw		= false;
+let isListeningOnPort = false;
 
 console.log("Starting Discord bot script.");
 // Heroku $PORT error fix
 app.set('port', (process.env.PORT || 5000));
 app.get('/', function(request, response) {
-    var result = 'App is running'
+    let result = 'App is running'
     response.send(result);
 }).listen(app.get('port'), function() {
     console.log('App is running, server is listening on port ', app.get('port'));
@@ -32,9 +32,9 @@ app.get('/', function(request, response) {
 
 var commands = {
 	"gif" : {
-		"protocol" : function(options, suffix, callback) {
-			var query = '&q=' + suffix.split(' ').join('+');
-			var params = ''
+		run: (options, suffix, callback) => {
+			let query = '&q=' + suffix.split(' ').join('+');
+			let params = ''
 			for (param in conf.giphy_params) {
 				params += '&' + param + '=' + conf.giphy_params[param];
 			}
@@ -45,36 +45,33 @@ var commands = {
 				params += '&rating=r';
 			}
 
-			var request_url = conf.urls.giphy + '?' + query + params;
+			let request_url = conf.urls.giphy + '?' + query + params;
 			console.log(request_url);
-			request(request_url, function (error, response, body) {
+			request(request_url, (error, response, body) => {
 				//console.log(arguments)
 				if (error || response.statusCode !== 200) {
 					console.error("giphy: Got error: " + body);
 					console.log(error);
 					callback(new Error("Giphy error."), "Bad Request.");
+					return;
 				}
-				else {
-					var responseObj = JSON.parse(body);
-					console.log(responseObj.data.rating);
-					if (responseObj.data.length) {
-						var random_index = Math.floor(Math.random() * responseObj.data.length);
-						// console.log(random_index);
-						var response_url = responseObj.data[random_index].images.fixed_height.url;
-						callback(null, response_url);
-					} else {
-						callback(null, "No results :(");
-					}
+				let responseObj = JSON.parse(body);
+				if (responseObj.data.length) {
+					let random_index = Math.floor(Math.random() * responseObj.data.length);
+					let response_url = responseObj.data[random_index].images.fixed_height.url;
+					callback(null, response_url);
+				} else {
+					callback(null, "No results :(");
 				}
-			}.bind(this));
+			});
 		}
 	},
 	"meme" : {
-		"protocol" : function(options, suffix, callback) {
-			var sfx_arr = suffix.split('"');
-			var sfx_split_space = suffix.split(' ');
+		run: (options, suffix, callback) => {
+			let sfx_arr = suffix.split('"');
+			let sfx_split_space = suffix.split(' ');
 			if (sfx_split_space[0].toLowerCase() == "help") {
-				var response = "List of meme templates: \n";
+				let response = "List of meme templates: \n";
 				for (key in conf.meme_ids){
 					response += "\t" + key + "\n";
 				}
@@ -84,11 +81,11 @@ var commands = {
 				return;
 			}
 
-			var template_id = sfx_arr[0].trim();
+			let template_id = sfx_arr[0].trim();
 
 			if (sfx_arr.length >= 2) {
-				var top_text = sfx_arr[1];
-				var bot_text = "";
+				let top_text = sfx_arr[1];
+				let bot_text = "";
 				// Optional top text only
 				if (sfx_arr.length >= 4 && sfx_arr[2] == ' ') {
 					bot_text = sfx_arr[3];
@@ -99,22 +96,22 @@ var commands = {
 		}
 	},
 	"image" : {
-		"protocol" : function(options, suffix, callback) {
-			google(suffix, callback);
+		run: (options, suffix, callback) => {
+			googleImg(suffix, callback);
 		}
 	},
 	"weather" : {
-		"protocol" : function(options, suffix, callback) {
+		run: (options, suffix, callback) => {
 			weather(suffix, callback);
 		}
 	},
 	"wolfram" : {
-		"protocol" : function(options, suffix, callback) {
-			wolfram.query(suffix, function(err, result) {
+		run: (options, suffix, callback) => {
+			wolfram.query(suffix, (err, result) => {
 				if (err) {
 					callback(null, "Bad query.");
 				} else {
-					var response = "";
+					let response = "";
 					if (result.queryresult == undefined) {
 						callback(null, "Bad query.");
 						return;
@@ -124,13 +121,13 @@ var commands = {
 						callback(null, "Bad query.");
 						return;
 					}
-					for(var a=0; a<result.queryresult.pod.length && a < 5; a++) {
-						var pod = result.queryresult.pod[a];
+					for(let a=0; a<result.queryresult.pod.length && a < 5; a++) {
+						let pod = result.queryresult.pod[a];
 						response += "**" + pod.$.title + "**: \n";
-						for(var b=0; b<pod.subpod.length; b++) {
-							var subpod = pod.subpod[b];
-							for(var c=0; c<subpod.plaintext.length; c++) {
-								var text = subpod.plaintext[c];
+						for(let b=0; b<pod.subpod.length; b++) {
+							let subpod = pod.subpod[b];
+							for(let c=0; c<subpod.plaintext.length; c++) {
+								let text = subpod.plaintext[c];
 								response += '\t' + text + "\n";
 							}
 						}
@@ -142,21 +139,21 @@ var commands = {
 		}
 	},
 	"join" : {
-		"protocol" : function(options, suffix, callback) {
-			bot.joinServer(suffix, function(err, server) {
+		run: (options, suffix, callback) => {
+			bot.joinServer(suffix, (err, server) => {
 				if (err) {
 					callback(null, "Failed to join " + server + ".");
-				} else {
-					bot.sendMessage(server, "Hello!");
-					callback(null, "Succesfully joined " + server + ".");
+					return
 				}
+				bot.sendMessage(server, "Hello!");
+				callback(null, "Succesfully joined " + server + ".");
 			});
 		}
 	},
 	"leave" : {
-		"protocol" : function(options, message, callback) {
-			var server = message.channel;
-			bot.leaveServer(server, function(err) {
+		run: (options, message, callback) => {
+			let server = message.channel;
+			bot.leaveServer(server, (err) => {
 				if (err) {
 					callback(null, "It won't let me leave!");
 				}
@@ -164,13 +161,14 @@ var commands = {
 		}
 	},
 	"help" : {
-		"protocol" : function(options, message, callback) {
-			var response = "Here are some of the commands I can do!\n";
+		run: (options, message, callback) => {
+			let response = "Here are some of the commands I can do!\n";
 			response +=  "\t" + name + " gif <query>\n";
 			response +=  "\t" + name + " image <query>\n";
 			response +=  "\t" + name + " meme help\n";
 			response +=  "\t" + name + " weather <zipcode>\n";
 			response +=  "\t" + name + " join <invite-link>\n";
+			response +=	 "\t" + name + " wolfram <query>\n";
 			response +=  "\t" + name + " leave\n";
 			response +=  "\t /roll <lower (optional)> <higher (optional)>\n\n";
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
@@ -179,10 +177,10 @@ var commands = {
 	}
 }
 
-var slash_commands = {
+let slash_commands = {
 	"roll" : {
-		"protocol" : function(message, callback) {
-			var sfx_arr = message.content.split(' ');
+		run: (message, callback) => {
+			let sfx_arr = message.content.split(' ');
 			if (sfx_arr.length == 1) {
 				callback(null,roll(message.author, 1, 100));
 			}
@@ -200,71 +198,78 @@ var slash_commands = {
 	}
 }
 
-var responses = {
+let autoResponses = {
 	"Kappa": {
-		"protocol": function(callback) {
+		run: (callback) => {
 			callback(null, conf.urls.Kappa);
 		}
 	},
 	"lategong" : {
-		"protocol" : function(callback) {
+		run: (callback) => {
 			callback(null, conf.urls.leigong);
 		}
 	}
 }
 
-function parseCommand(message, callback) {
-	var message_content = message.content;
-	var message_arr = message_content.split(' ');
-	var first_word = message_arr[0].toLowerCase();
-	var options = {};
+/**
+ * Handles messages prefixed with the bot's name
+ * @param  {Object} message - Discord message object
+ * @param  {Function} callback
+ * @return {void}
+ */
+function onMessage(message, callback) {
+	let message_content = message.content;
+	let message_arr = message_content.split(' ');
+	let first_word = message_arr[0].toLowerCase();
+	let options = {};
+
+	// Do not listen to own name
+	if (message.author.username === name) {
+		callback();
+		return;
+	}
 
 	// Accept command if the first word is a name
 	if (first_word === name.toLowerCase()) {
 		// No commands
 		if (message_arr.length == 1) {
-			callback(null,null);
+			callback();
 			return;
 		}
 		message_arr.shift();
 
 		// Options parse
 		while (message_arr[0].substr(0,1) == '-') {
-			console.log(message_arr[0].substr(1));
-			if (message_arr[0].substr(1).toLowerCase() == 'sfw') {
-				options['sfw'] = true;
-			} else if (message_arr[0].substr(1).toLowerCase() == 'nsfw') {
-				options['nsfw'] = true;
-			} else {
-				callback(null, message_arr[0].substr(1) + " is not a valid option.");
-			}
+			let option = message_arr[0].substr(1).toLowerCase()
+			options[option] = true;
 			message_arr.shift();
 		}
 
-		// No actual command
+		// No command
 		if (message_arr.length == 0) {
-			callback(null,null);
+			callback();
 		}
-		var command = message_arr.shift();
-		
+
+		// Run the command
+		let command = message_arr.shift();
 		if (commands[command] != null) {
 			// Commands that take no suffix
 			if (message_arr.length == 0) {
-				commands[command].protocol(options, message, function(err, response) {
+				commands[command].run(options, message, (err, response) => {
 					if (err) {
-						callback(err, null);
-					} else {
-						callback(null, response);
+						callback(err);
+						return;
 					}
+					callback(null, response);
 				});
 			} else {
-				var suffix = message_arr.join(" ");
-				commands[command].protocol(options, suffix, function(err, response) {
+				let suffix = message_arr.join(" ");
+				commands[command].run(options, suffix, (err, response) => {
 					if (err) {
-						callback(err, null);
-					} else {
-						callback(null, response);
+						callback(err);
+						return;
 					}
+					callback(null, response);
 				});
 			}
 		} else {
@@ -272,18 +277,24 @@ function parseCommand(message, callback) {
 		}
 	// Throw an error if the request is not valid
 	} else {
-		callback(null, null);
+		callback();
 	}
 }
 
-function parseSlash(message, callback) {
-	var first = message.content.split(' ')[0];
+/**
+ * Handles commands that are prefixed with "/"
+ * @param  {Object} message - Discord message object
+ * @param  {Function} callback 
+ * @return {voids}
+ */
+function onSlash(message, callback) {
+	let first = message.content.split(' ')[0];
 	if (first.substring(0,1) == '/') {
-		var command = first.substring(1);
+		let command = first.substring(1);
 		if (slash_commands[command] != null) {
-			slash_commands[command].protocol(message, function(err, response) {
+			slash_commands[command].run(message, (err, response) => {
 				if (err) {
-					callback(err, null);
+					callback(err);
 				} else {
 					callback(null, response);
 				}
@@ -292,79 +303,90 @@ function parseSlash(message, callback) {
 	}
 }
 
+/**
+ * Response handler for commands without name prefix
+ * @param  {Object} message - Discord message object
+ * @param  {Function} callback
+ * @return {void}
+ */
 function autoResponse(message, callback) {
-	var message_arr = message.content.split(' ');
-	var i;
-	for (i = 0; i < message_arr.length; i++) {
-		if (responses[message_arr[i]] != null) {
+	let message_arr = message.content.split(' ');
+	for (let i = 0; i < message_arr.length; i++) {
+		if (autoResponses[message_arr[i]] != null) {
 			// If we need to deal with an error later, we can make
 			// some statements to deal with it, for now we just say null
-			responses[message_arr[i]].protocol(function(err, response) {
+			autoResponses[message_arr[i]].run((err, response) => {
 				callback(null, response);
 			});
 		}
 	}
 }
 
-// Create imgflip meme
+/**
+ * Creates an imgflip meme
+ * @param  {string} template_id - ID for the meme template to use
+ * @param  {string} top_text - String for the text at the top of the meme
+ * @param  {string} bot_text - String for the text at the bottom of the meme
+ * @param  {Function} callback
+ * @return {void}
+ */
 function imgflip(template_id, top_text, bot_text, callback) {
-	var request_url = conf.urls.meme + '?template_id=';
+	let requestParams = {
+		url: conf.urls.meme,
+		qs: {
+			template_id: template_id,
+			username: process.env.MEME_USER,
+			password: process.env.MEME_PASS,
+			text0: top_text,
+			text1: bot_text
+		}
+	};
 
-	request_url += template_id
-	request_url += '&username=' + process.env.MEME_USER;
-	request_url += '&password=' + process.env.MEME_PASS;
-	request_url += '&text0=' + top_text;
-	request_url += '&text1=' + bot_text;
-	console.log(request_url);
-	request(request_url, function (error, response, body) {
+	request(requestParams, (error, response, body) => {
 		if (error || response.statusCode !== 200) {
 			callback(new Error("Imgflip error."), "Bad Request.");
 		}
 		else {
-			var responseObj = JSON.parse(body);
-			// console.log(responseObj.data);
+			let responseObj = JSON.parse(body);
 			if (responseObj.success) {
-				var response_url = responseObj.data.url;
-				console.log(response_url);
-				console.log(callback);
+				let response_url = responseObj.data.url;
 				callback(null, response_url);
 			} else {
 				callback(null, "Bad meme :(");
 			}
 		}
-	}.bind(this));
+	});
 }
 
-// Google CSE
-function google(query, callback) {
-	var request_url = conf.urls.google + '?q=';
+/**
+ * Queries for a google image
+ * @param  {string} query - Query string to search google images for
+ * @param  {Function} callback
+ * @return {void}
+ */
+function googleImg(query, callback) {
+	let requestParams = {
+		url: conf.urls.google,
+		qs: {
+			q: query,
+			key: process.env.IMG_KEY,
+			cx: process.env.IMG_CX,
+			searchType: conf.google_image_params['searchType'],
+			fileType: conf.google_image_params['fileType'],
+			alt: conf.google_image_params['alt']
+		}
+	};
 
-	request_url += query;
-	request_url += '&key=' + process.env.IMG_KEY;
-	request_url += '&cx=' + process.env.IMG_CX;
-	request_url += '&searchType=' + conf.google_image_params['searchType'];
-	request_url += '&fileType=' + conf.google_image_params['fileType'];
-	request_url += '&alt=' + conf.google_image_params['alt'];
-
-	// console.log(conf.google_image_params);
-	// for (param in conf.google_image_params) {
-	// 	params += '&' + param + '=' + conf.google_image_params[param];
-	// }
-
-	// console.log(request_url);
-	request(request_url, function (error, response, body) {
+	request(requestParams, (error, response, body) => {
 		if (error || response.statusCode !== 200) {
 			callback(new Error("Google error."), "Bad Request.");
 		}
 		else {
-			var responseObj = JSON.parse(body);
-			// console.log(responseObj.data);
+			let responseObj = JSON.parse(body);
 			if (responseObj.items) {
 				if (responseObj.items.length) {
-					var random_index = Math.floor(Math.random() * responseObj.items.length);
-					var response_url = responseObj.items[random_index].link;
-					// console.log(response_url);
-					// console.log(callback);
+					let random_index = Math.floor(Math.random() * responseObj.items.length);
+					let response_url = responseObj.items[random_index].link;
 					callback(null, response_url);
 				} else {
 					callback(null, "No results :(");
@@ -373,27 +395,31 @@ function google(query, callback) {
 				callback(null, "No results :(");
 			}
 		}
-	}.bind(this));
+	});
 }
 
+/**
+ * Gets the weather information based on the location query
+ * @param  {string} query
+ * @param  {Function} callback
+ * @return {void}
+ */
 function weather(query, callback) {
-	var request_url = conf.urls.weatherstart 
+	let request_url = conf.urls.weatherstart 
 		+ process.env.WEATHER 
 		+ conf.urls.weatherend
-		+ query
-		+ '.json';
-	console.log(request_url);
+		+ query + '.json';
 
 	request(request_url, function (error, response, body) {
 		if (error || response.statusCode !== 200) {
 			callback(new Error("Wunderground error."), "Bad Request.");
 		}
 		else {
-			var responseObj = JSON.parse(body);
+			let responseObj = JSON.parse(body);
 			if (responseObj.location != undefined) {
-				var cityweather = responseObj.current_observation;
-				var cityloc = responseObj.location;
-				var response = "It is currently " + cityweather.temperature_string
+				let cityweather = responseObj.current_observation;
+				let cityloc = responseObj.location;
+				let response = "It is currently " + cityweather.temperature_string
 					+ " in " + cityloc.city + ".\n"
 					+ "The weather there is currently " + cityweather.weather + ".";
 				callback(null, response);
@@ -408,9 +434,16 @@ function isPositiveInteger(n) {
     return 0 === n % (!isNaN(parseFloat(n)) && 0 <= ~~n);
 }
 
+/**
+ * Rolls a random integer between a and b
+ * @param  {string} user
+ * @param  {int} a - lower bound
+ * @param  {int} b - upper bound
+ * @return {string}
+ */
 function roll(user, a, b) {
 	if (b === undefined || b === null) {
-		var rand_roll = Math.floor(Math.random()*a)+1;
+		let rand_roll = Math.floor(Math.random()*a)+1;
 		if (a > 0) {
 			return user + " rolls " + rand_roll + " (1-" + a + ")";
 		} else {
@@ -421,7 +454,7 @@ function roll(user, a, b) {
 		if (a > b) {
 			return "Rolls require the first number to be less than the second.";
 		}
-		var rand_roll = Math.floor(Math.random()*(b-a+1))+parseInt(a);
+		let rand_roll = Math.floor(Math.random()*(b-a+1))+parseInt(a);
 		return user + " rolls " + rand_roll + " (" + a + "-" + b + ")"; 
 	}
 }
@@ -432,37 +465,37 @@ bot.on("ready", function() {
 	console.log(name + " is online.");
 });
 
-// Bot responses
+// Message handler
 bot.on("message", function(message){
-	parseCommand(message, function respond(err, response) {
+	onMessage(message, (err, response) => {
 		if (err) {
 			console.log(err);
 		} else {
-			if (response !== null) {
-				bot.sendMessage(message.channel, response, function(err, message) {
+			if (response) {
+				bot.sendMessage(message.channel, response, (err, message) => {
 					if (err) {
-						console.log("parse command error: " +err);
+						console.log("onMessage error: " + err);
 					}
 				});
 			}
 		}
 	});
-	parseSlash(message, function respond(err, response) {
+	onSlash(message, (err, response) => {
 		if (err) {
 			console.log(err);
 		} else {
-			bot.sendMessage(message.channel, response, function(err, message) {
+			bot.sendMessage(message.channel, response, (err, message) => {
 				if (err) {
 					console.log("parse slash error: " +err);
 				}
 			});
 		}
 	});
-	autoResponse(message, function autoRespond(err, response) {
+	autoResponse(message, (err, response) => {
 		if (err) {
 			console.log(err)
 		} else {
-			bot.sendMessage(message.channel, response, function(err, message) {
+			bot.sendMessage(message.channel, response, (err, message) => {
 				if (err) {
 					console.log("auto respond error: " +err);
 				}
@@ -471,10 +504,5 @@ bot.on("message", function(message){
 	});
 });
 
-bot.loginWithToken(process.env.CLIENT_SECRET, function(err, response) {
-	if (err) {
-		console.log("The client failed to login because of error: " + err);
-	} else {
-		console.log("Client login successful: " + response);
-	}
-});
+// Login with the token secret
+bot.loginWithToken(process.env.CLIENT_SECRET);
