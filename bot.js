@@ -6,46 +6,60 @@ let Discord = require('discord.js');
 let conf 	= require('./config.json');
 
 // Dependencies
-let jsdom			= require('jsdom');
-let url 			= require('url');
-let request 		= require('request');
-let redis			= require('redis');
-let express 		= require('express');
-let wolframClient 	= require('node-wolfram')
-let helpers 		= require('./helpers.js');
-let exec 			= require('child_process').exec;
+let jsdom			= require('jsdom'),
+	url 			= require('url'),
+	request 		= require('request'),
+	redis			= require('redis'),
+	express 		= require('express'),
+	wolframClient 	= require('node-wolfram'),
+	helpers 		= require('./helpers.js'),
+	exec 			= require('child_process').exec,
+	chrono 			= require('chrono-node');
 
 // Vars
-let bot 		= new Discord.Client();
-let wolfram 	= new wolframClient(process.env.WOLFRAM_KEY);
-let name 		= "";
-let redisURL 	= url.parse(process.env.REDIS_URL)
-let redisClient = redis.createClient(redisURL.port, redisURL.hostname);
-let app     	= express();
+let bot 		= new Discord.Client(),
+	wolfram 	= new wolframClient(process.env.WOLFRAM_KEY),
+	name 		= "",
+	redisURL 	= url.parse(process.env.REDIS_URL),
+	redisClient = redis.createClient(redisURL.port, redisURL.hostname),
+	app     	= express();
 
 // Bools
-let sfw		= false;
-let isListeningOnPort = false;
+let sfw		= false,
+	isListeningOnPort = false;
 
-console.log("Starting Discord bot script.");
-// Heroku $PORT error fix
-app.set('port', (process.env.PORT || 5000));
-app.get('/', function(request, response) {
-    let result = 'App is running'
-    response.send(result);
-}).listen(app.get('port'), function() {
-    console.log('App is running, server is listening on port ', app.get('port'));
-});
+// CONST
+const MS_IN_SECONDS = 1000,
+	MS_IN_MINUTES = 1000 * 60,
+	MS_IN_HOURS	= 1000 * 60 * 60,
+	MS_IN_DAYS = 1000 * 60 * 60 * 24;
 
-// Redis
-redisClient.auth(redisURL.auth.split(':')[1], (err) => {
-	if (err) {
-		console.log("Redis auth error: " + err);
-	}
-});
-redisClient.on("error", function (err) {
-    console.log("Redis Error " + err);
-});
+function init() {
+	console.log("Starting Discord bot script.");
+	// Heroku $PORT error fix
+	app.set('port', (process.env.PORT || 5000));
+	app.get('/', function(request, response) {
+	    let result = 'App is running'
+	    response.send(result);
+	}).listen(app.get('port'), function() {
+	    console.log('App is running, server is listening on port ', app.get('port'));
+	});
+
+	// Login with the token secret
+	bot.loginWithToken(process.env.CLIENT_SECRET);
+
+	// Redis
+	redisClient.auth(redisURL.auth.split(':')[1], (err) => {
+		if (err) {
+			console.log("Redis auth error: " + err);
+		}
+	});
+	redisClient.on("error", function (err) {
+	    console.log("Redis Error " + err);
+	});
+}
+
+init();
 
 var commands = {
 	"gif" : {
@@ -194,6 +208,34 @@ var commands = {
 			})
 		}
 	},
+	"uptime": {
+		run: (options, suffix, callback) => {
+			let seconds = Math.floor(bot.uptime / MS_IN_SECONDS) % 60,
+				minutes = Math.floor(bot.uptime / MS_IN_MINUTES) % 60,
+				hours = Math.floor(bot.uptime / MS_IN_HOURS) % 24,
+				days = Math.floor(bot.uptime / MS_IN_DAYS) 
+			callback(null, days + "d " + hours + "h " + minutes + "m " + seconds + "s");
+		}
+	},
+	"remind": {
+		run: (options, suffix, callback) => {
+			if (getFirstWord(suffix.toLowerCase()) === "me") {
+				suffix = suffix.split(' ');
+				suffix.shift();
+				suffix = suffix.join(' ');
+				console.log(suffix);
+			}
+			let result = chrono.parse(suffix)[0];
+			let strBeforeTime = suffix.slice(0,result.index);
+			let strAfterTime = suffix.slice(result.index + result.text.length - 1);
+			let remainingString = (strBeforeTime.length > strAfterTime.length) ? strBeforeTime : strAfterTime;
+
+			redisClient.hset("remindTo", result.start.date(), author);
+			redisClient.hset("remindWhat", result.start.date(), reminder);
+			// addTimer();
+			callback(null, "I will remind you, \"" + remainingString + "\", on " + result.start.date());
+		}
+	},
 	"help" : {
 		run: (options, message, callback) => {
 			let response = "Here are some of the commands I can do!\n";
@@ -213,14 +255,18 @@ let slash_commands = {
 	"roll" : {
 		run: (message, callback) => {
 			let sfx_arr = message.content.split(' ');
+			let lo = sfx_arr[1];
+			let hi = sfx_arr[2];
+
+			// Default roll is from 1-100
 			if (sfx_arr.length == 1) {
 				callback(null,roll(message.author, 1, 100));
 			}
 			if (sfx_arr.length == 2) {
-				if (sfx_arr[1] == "rick") {
+				if (lo == "rick") {
 					callback(null,"https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 				}
-				if (isPositiveInteger(sfx_arr[1])) {
+				if (isPositiveInteger(lo)) {
 					callback(null,roll(message.author, sfx_arr[1]));
 				}
 			} else if (sfx_arr.length == 3) {
@@ -462,6 +508,12 @@ function weather(query, callback) {
 	});
 }
 
+/**
+ * Returns if a string is a positive integer.
+ * THIS FUNCTION IS LITERALLY MAGIC.
+ * @param  {string}  n
+ * @return {Boolean}
+ */
 function isPositiveInteger(n) {
     return 0 === n % (!isNaN(parseFloat(n)) && 0 <= ~~n);
 }
@@ -489,6 +541,10 @@ function roll(user, a, b) {
 		let rand_roll = Math.floor(Math.random()*(b-a+1))+parseInt(a);
 		return user + " rolls " + rand_roll + " (" + a + "-" + b + ")"; 
 	}
+}
+
+function getFirstWord(str) {
+	return str.split(' ')[0];
 }
 
 // Bot initializiation
@@ -536,5 +592,3 @@ bot.on("message", function(message){
 	});
 });
 
-// Login with the token secret
-bot.loginWithToken(process.env.CLIENT_SECRET);
