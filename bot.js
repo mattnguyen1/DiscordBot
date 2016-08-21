@@ -99,8 +99,9 @@ var commands = {
 			let sfx_arr = suffix.split('"');
 			let sfx_split_space = suffix.split(' ');
 			if (sfx_split_space[0].toLowerCase() == "help") {
+				console.log(conf.meme_ids);
 				let response = "List of meme templates: \n";
-				for (key in conf.meme_ids){
+				for (let key in conf.meme_ids){
 					response += "\t" + key + "\n";
 				}
 				response += "\nUsage:\n";
@@ -226,14 +227,18 @@ var commands = {
 				console.log(suffix);
 			}
 			let result = chrono.parse(suffix)[0];
+			if (!(result && result.index && result.text && result.start && result.start.date())) {
+				callback(null, "Failed to parse reminder!");
+				return;
+			}
 			let strBeforeTime = suffix.slice(0,result.index);
 			let strAfterTime = suffix.slice(result.index + result.text.length - 1);
 			let remainingString = (strBeforeTime.length > strAfterTime.length) ? strBeforeTime : strAfterTime;
 
-			redisClient.hset("remindTo", result.start.date(), author);
-			redisClient.hset("remindWhat", result.start.date(), reminder);
+			// redisClient.hset("remindTo", result.start.date(), author);
+			// redisClient.hset("remindWhat", result.start.date(), reminder);
 			// addTimer();
-			callback(null, "I will remind you, \"" + remainingString + "\", on " + result.start.date());
+			callback(null, "I will remind you on " + result.start.date() + ", " + remainingString);
 		}
 	},
 	"help" : {
