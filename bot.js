@@ -338,22 +338,10 @@ function onMessage(message, callback) {
 		if (commands[command] != null) {
 			// Commands that take no suffix
 			if (message_arr.length == 0) {
-				commands[command].run(options, message, (err, response) => {
-					if (err) {
-						callback(err);
-						return;
-					}
-					callback(null, response);
-				});
+				commands[command].run(options, message, callback);
 			} else {
 				let suffix = message_arr.join(" ");
-				commands[command].run(options, suffix, (err, response) => {
-					if (err) {
-						callback(err);
-						return;
-					}
-					callback(null, response);
-				});
+				commands[command].run(options, suffix, callback);
 			}
 		} else {
 			callback(new Error("Command is invalid."), null);
@@ -563,14 +551,13 @@ bot.on("message", function(message){
 	onMessage(message, (err, response) => {
 		if (err) {
 			console.log(err);
-		} else {
-			if (response) {
-				bot.sendMessage(message.channel, response, (err, message) => {
-					if (err) {
-						console.log("onMessage error: " + err);
-					}
-				});
-			}
+		}
+		if (response) {
+			bot.sendMessage(message.channel, response, (err, message) => {
+				if (err) {
+					console.log("onMessage error: " + err);
+				}
+			});
 		}
 	});
 	onSlash(message, (err, response) => {
