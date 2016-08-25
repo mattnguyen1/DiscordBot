@@ -22,17 +22,19 @@ let bot 		= new Discord.Client(),
 	name 		= "",
 	redisURL 	= url.parse(process.env.REDIS_URL),
 	redisClient = redis.createClient(redisURL.port, redisURL.hostname),
-	app     	= express();
+	app     	= express(),
+	messages	= [];
 
 // Bools
 let sfw		= false,
 	isListeningOnPort = false;
 
 // CONST
-const MS_IN_SECONDS = 1000,
-	MS_IN_MINUTES = 1000 * 60,
-	MS_IN_HOURS	= 1000 * 60 * 60,
-	MS_IN_DAYS = 1000 * 60 * 60 * 24;
+const 	MS_IN_SECONDS = 1000,
+		MS_IN_MINUTES = 1000 * 60,
+		MS_IN_HOURS	= 1000 * 60 * 60,
+		MS_IN_DAYS = 1000 * 60 * 60 * 24,
+		MAX_MESSAGES_IN_MEMORY = 100;
 
 function init() {
 	console.log("Starting Discord bot script.");
@@ -267,6 +269,24 @@ var commands = {
 				+ hour + ":" + zeroPad(minute) + " " + ampm // Time
 				+ " " + actionWord
 				+ "```" + reminderText + "```");
+		}
+	},
+	"delete" : {
+		run: (options, suffix, callback) => {
+			var lastMessage = messages.pop();
+			if (lastMessage) {
+				bot.deleteMessage(lastMessage, { wait: 0 }, callback);
+			}
+		}
+	},
+	"flush" : {
+		run: (options, suffix, callback) => {
+			while (messages.length) {
+				var lastMessage = messages.pop();
+				if (lastMessage) {
+					bot.deleteMessage(lastMessage, { wait: 0 }, callback);
+				}
+			}	
 		}
 	},
 	"help" : {
@@ -564,8 +584,30 @@ function roll(user, a, b) {
 	}
 }
 
+/**
+ * Returns the first word delimited by spaces in the string
+ * @param  {string} str
+ * @return {string}    
+ */
 function getFirstWord(str) {
 	return str.split(' ')[0];
+}
+
+/**
+ * Handles a successfully sent message by the bot client
+ * @param  {?Error} err
+ * @param  {Message} message
+ * @return {void}    
+ */
+function handleMessageSent(err, message) {
+	if (err) {
+		console.log(err);
+		return;
+	}
+	messages.push(message);
+	if (messages.length > MAX_MESSAGES_IN_MEMORY) {
+		messages.shift();
+	}
 }
 
 // Bot initializiation
@@ -581,33 +623,21 @@ bot.on("message", function(message){
 			console.log(err);
 		}
 		if (response) {
-			bot.sendMessage(message.channel, response, (err, message) => {
-				if (err) {
-					console.log("onMessage error: " + err);
-				}
-			});
+			bot.sendMessage(message.channel, response, handleMessageSent);
 		}
 	});
 	onSlash(message, (err, response) => {
 		if (err) {
 			console.log(err);
 		} else {
-			bot.sendMessage(message.channel, response, (err, message) => {
-				if (err) {
-					console.log("parse slash error: " +err);
-				}
-			});
+			bot.sendMessage(message.channel, response, handleMessageSent);
 		}
 	});
 	autoResponse(message, (err, response) => {
 		if (err) {
 			console.log(err)
 		} else {
-			bot.sendMessage(message.channel, response, (err, message) => {
-				if (err) {
-					console.log("auto respond error: " +err);
-				}
-			});
+			bot.sendMessage(message.channel, response, handleMessageSent);
 		}
 	});
 });
