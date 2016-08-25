@@ -280,9 +280,9 @@ var commands = {
 						callback(err);
 						return;
 					}
-					callback(null, "Deleted message.");
 				});
 			}
+			callback(null, null);
 		}
 	},
 	"flush" : {
@@ -298,7 +298,7 @@ var commands = {
 					});
 				}
 			}
-			callback(null, "Deleted messages.");
+			callback(null, null);
 		}
 	},
 	"help" : {
