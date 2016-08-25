@@ -295,10 +295,10 @@ var commands = {
 							callback(err);
 							return;
 						}
-						callback(null, "Deleted messages.");
 					});
 				}
-			}	
+			}
+			callback(null, "Deleted messages.");
 		}
 	},
 	"help" : {
