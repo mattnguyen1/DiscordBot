@@ -220,25 +220,53 @@ var commands = {
 	},
 	"remind": {
 		run: (options, suffix, callback) => {
+			let zeroPad = (num) => {
+				if (num < 10) {
+					return "0" + num;
+				}
+				return num;
+			};
+
+			// @TODO(mattnguyen1) 2016-08-24: Make this parse a user to @mention them
 			if (getFirstWord(suffix.toLowerCase()) === "me") {
-				suffix = suffix.split(' ');
-				suffix.shift();
-				suffix = suffix.join(' ');
-				console.log(suffix);
+				suffix = suffix.slice(3);
 			}
+			// Use chrono to parse the string for a time
 			let result = chrono.parse(suffix)[0];
-			if (!(result && result.index && result.text && result.start && result.start.date())) {
+			if (!(result && result.index !== undefined && result.text && result.start && result.start.date())) {
 				callback(null, "Failed to parse reminder!");
 				return;
 			}
-			let strBeforeTime = suffix.slice(0,result.index);
-			let strAfterTime = suffix.slice(result.index + result.text.length - 1);
-			let remainingString = (strBeforeTime.length > strAfterTime.length) ? strBeforeTime : strAfterTime;
+			// Get the resulting reminder text
+			let strBeforeTime = suffix.slice(0,result.index),
+				strAfterTime = suffix.slice(result.index + result.text.length),
+				reminderText = (strBeforeTime.length > strAfterTime.length) ? strBeforeTime : strAfterTime;
+
+			// Find the action word
+			let actionWord = getFirstWord(reminderText.toLowerCase());
+			if (actionWord === "to" || actionWord === "that") {
+				reminderText = reminderText.slice(actionWord.length+1);
+			} else {
+				actionWord = "";
+			}
+
+			let year = result.start.get('year'),
+				month = result.start.get('month'),
+				day = result.start.get('day'),
+				hour = result.start.get('hour') % 12,
+				minute = result.start.get('minute'),
+				ampm = result.start.get('meridiem') !== undefined ? (0 ? "AM" : "PM") : "";
+
+			hour = hour === 0 ? 12 : (hour % 12);
 
 			// redisClient.hset("remindTo", result.start.date(), author);
 			// redisClient.hset("remindWhat", result.start.date(), reminder);
 			// addTimer();
-			callback(null, "I will remind you on " + result.start.date() + ", " + remainingString);
+			callback(null, "I will remind you on " 
+				+ month + "/" + day + "/" + year + " @ " // Date
+				+ hour + ":" + zeroPad(minute) + " " + ampm // Time
+				+ " " + actionWord
+				+ "```" + reminderText + "```");
 		}
 	},
 	"help" : {
