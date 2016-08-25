@@ -275,7 +275,13 @@ var commands = {
 		run: (options, suffix, callback) => {
 			var lastMessage = messages.pop();
 			if (lastMessage) {
-				bot.deleteMessage(lastMessage, { wait: 0 }, callback);
+				bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
+					if (err) {
+						callback(err);
+						return;
+					}
+					callback(null, "Deleted message.");
+				});
 			}
 		}
 	},
@@ -284,7 +290,13 @@ var commands = {
 			while (messages.length) {
 				var lastMessage = messages.pop();
 				if (lastMessage) {
-					bot.deleteMessage(lastMessage, { wait: 0 }, callback);
+					bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
+						if (err) {
+							callback(err);
+							return;
+						}
+						callback(null, "Deleted messages.");
+					});
 				}
 			}	
 		}
