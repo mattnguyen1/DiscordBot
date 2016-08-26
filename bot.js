@@ -23,7 +23,8 @@ let bot 		= new Discord.Client(),
 	redisURL 	= url.parse(process.env.REDIS_URL),
 	redisClient = redis.createClient(redisURL.port, redisURL.hostname),
 	app     	= express(),
-	messages	= [];
+	messages	= [],
+	reminders	= [];
 
 // Bools
 let sfw		= false,
@@ -34,6 +35,7 @@ const 	MS_IN_SECONDS = 1000,
 		MS_IN_MINUTES = 1000 * 60,
 		MS_IN_HOURS	= 1000 * 60 * 60,
 		MS_IN_DAYS = 1000 * 60 * 60 * 24,
+		MS_IN_YEARS = 1000 * 60 * 60 * 24 * 365,
 		MAX_MESSAGES_IN_MEMORY = 100;
 
 function init() {
@@ -54,18 +56,38 @@ function init() {
 	redisClient.auth(redisURL.auth.split(':')[1], (err) => {
 		if (err) {
 			console.log("Redis auth error: " + err);
+			return;
 		}
+		// Load Reminders
+		redisClient.hgetall("reminders", (err, obj) => {
+			if (err) {
+				console.log("Redis load reminders error: " + err);
+				return;
+			}
+			for (let key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					let timestamp = JSON.parse(key);
+					if (timestamp < Date.now()) {
+						redisClient.hdel("reminders", key);
+					}
+					addTimer(timestamp, obj[key]);
+				}
+			}
+		})
 	});
 	redisClient.on("error", function (err) {
 	    console.log("Redis Error " + err);
 	});
+
+	
 }
 
 init();
 
 var commands = {
 	"gif" : {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			let requestParams = {
 				url: conf.urls.giphy,
 				qs: {
@@ -97,7 +119,8 @@ var commands = {
 		}
 	},
 	"meme" : {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			let sfx_arr = suffix.split('"');
 			let sfx_split_space = suffix.split(' ');
 			if (sfx_split_space[0].toLowerCase() == "help") {
@@ -127,17 +150,18 @@ var commands = {
 		}
 	},
 	"image" : {
-		run: (options, suffix, callback) => {
-			googleImg(suffix, callback);
+		run: (options, message, callback) => {
+			googleImg(message.content, callback);
 		}
 	},
 	"weather" : {
-		run: (options, suffix, callback) => {
-			weather(suffix, callback);
+		run: (options, message, callback) => {
+			weather(message.content, callback);
 		}
 	},
 	"wolfram" : {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			wolfram.query(suffix, (err, result) => {
 				if (err) {
 					callback(null, "Bad query.");
@@ -170,7 +194,8 @@ var commands = {
 		}
 	},
 	"wcl": {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			if (options['setalias']) {
 				let suffix_arr = suffix.split(' ');
 				redisClient.hset("wcl", suffix_arr[0], suffix_arr[1]);
@@ -194,14 +219,24 @@ var commands = {
 		}
 	},
 	"redis-hgetall": {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			redisClient.hgetall(suffix, (err, obj) => {
 			    console.log(obj);
 			});
 		}
 	},
+	"redis-del": {
+		run: (options, message, callback) => {
+			let suffix = message.content;
+			redisClient.del(suffix, (err, obj) => {
+			    console.log(obj);
+			});
+		}
+	},
 	"get-alias": {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			let suffix_arr = suffix.split(' ');
 			let hash = suffix_arr[0];
 			let key = suffix_arr[1];
@@ -212,7 +247,7 @@ var commands = {
 		}
 	},
 	"uptime": {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
 			let seconds = Math.floor(bot.uptime / MS_IN_SECONDS) % 60,
 				minutes = Math.floor(bot.uptime / MS_IN_MINUTES) % 60,
 				hours = Math.floor(bot.uptime / MS_IN_HOURS) % 24,
@@ -221,7 +256,8 @@ var commands = {
 		}
 	},
 	"remind": {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
+			let suffix = message.content;
 			let zeroPad = (num) => {
 				if (num < 10) {
 					return "0" + num;
@@ -255,24 +291,30 @@ var commands = {
 			let year = result.start.get('year'),
 				month = result.start.get('month'),
 				day = result.start.get('day'),
-				hour = result.start.get('hour') % 12,
+				hour = result.start.get('hour'),
 				minute = result.start.get('minute'),
-				ampm = result.start.get('meridiem') !== undefined ? (0 ? "AM" : "PM") : "";
+				second = result.start.get('second'),
+				ampm = hour < 12 ? "AM" : "PM",
+				reminderMessage = message.author + ": " + reminderText;
 
-			hour = hour === 0 ? 12 : (hour % 12);
+			hour = (hour%12) === 0 ? 12 : (hour % 12);
 
-			// redisClient.hset("remindTo", result.start.date(), author);
-			// redisClient.hset("remindWhat", result.start.date(), reminder);
-			// addTimer();
-			callback(null, "I will remind you on " 
+			let timestamp = {
+				author: message.author.username,
+				channel: message.channel.id,
+				time: Date.parse(result.start.date())
+			}
+			redisClient.hset("reminders", JSON.stringify(timestamp), reminderMessage);
+			addTimer(timestamp, reminderMessage);
+			callback(null, message.author + ": I will remind you on " 
 				+ month + "/" + day + "/" + year + " @ " // Date
-				+ hour + ":" + zeroPad(minute) + " " + ampm // Time
+				+ hour + ":" + zeroPad(minute) + " " + ampm + "(PST)" // Time
 				+ " " + actionWord
 				+ "```" + reminderText + "```");
 		}
 	},
 	"delete" : {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
 			var lastMessage = messages.pop();
 			if (lastMessage) {
 				bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
@@ -286,7 +328,7 @@ var commands = {
 		}
 	},
 	"flush" : {
-		run: (options, suffix, callback) => {
+		run: (options, message, callback) => {
 			while (messages.length) {
 				var lastMessage = messages.pop();
 				if (lastMessage) {
@@ -372,7 +414,7 @@ function onMessage(message, callback) {
 		return;
 	}
 
-	// Accept command if the first word is a name
+	// Accept command if the first word is the name
 	if (first_word === name.toLowerCase()) {
 		// No commands
 		if (message_arr.length == 1) {
@@ -400,8 +442,8 @@ function onMessage(message, callback) {
 			if (message_arr.length == 0) {
 				commands[command].run(options, message, callback);
 			} else {
-				let suffix = message_arr.join(" ");
-				commands[command].run(options, suffix, callback);
+				message.content = message_arr.join(" ");
+				commands[command].run(options, message, callback);
 			}
 		} else {
 			callback(new Error("Command is invalid."), null);
@@ -620,6 +662,18 @@ function handleMessageSent(err, message) {
 	if (messages.length > MAX_MESSAGES_IN_MEMORY) {
 		messages.shift();
 	}
+}
+
+function addTimer(timestamp, reminder) {
+	let currentTimestamp = Date.now();
+	setTimeout(function() {
+		redisClient.hdel("reminders", JSON.stringify(timestamp));
+		bot.sendMessage(timestamp.channel, reminder, (err, response) => {
+			if (err) {
+				console.log(err);
+			}
+		});
+	}, timestamp.time - currentTimestamp);
 }
 
 // Bot initializiation
