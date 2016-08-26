@@ -361,6 +361,11 @@ var commands = {
 			})
 		}
 	},
+	"playing" : {
+		run: (options, message, callback) => {
+			bot.setPlayingGame(message.content, callback);
+		}
+	},
 	"help" : {
 		run: (options, message, callback) => {
 			let response = "Here are some of the commands I can do!\n";
