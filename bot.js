@@ -14,7 +14,8 @@ let jsdom			= require('jsdom'),
 	wolframClient 	= require('node-wolfram'),
 	helpers 		= require('./helpers.js'),
 	exec 			= require('child_process').exec,
-	chrono 			= require('chrono-node');
+	chrono 			= require('chrono-node'),
+	base64 			= require('node-base64-image');
 
 // Vars
 let bot 		= new Discord.Client(),
@@ -341,6 +342,23 @@ var commands = {
 				}
 			}
 			callback(null, null);
+		}
+	},
+	"avatar" :  {
+		run: (options, message, callback) => {
+			base64.encode(message.content, {}, (err, base64Resolvable) => {
+				if (err) {
+					callback(null, "Failed to convert image.");
+					return;
+				}
+				bot.setAvatar(base64Resolvable, (err) => {
+					if (err) {
+						callback(null, "Failed to set avatar.");
+						return;
+					}
+					callback(null, "Avatar set.");
+				})
+			})
 		}
 	},
 	"help" : {
