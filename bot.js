@@ -157,7 +157,7 @@ var commands = {
 	},
 	"weather" : {
 		run: (options, message, callback) => {
-			weather(message.content, callback);
+			weather(options, message, callback);
 		}
 	},
 	"wolfram" : {
@@ -461,13 +461,8 @@ function onMessage(message, callback) {
 		// Run the command
 		let command = message_arr.shift();
 		if (commands[command] != null) {
-			// Commands that take no suffix
-			if (message_arr.length == 0) {
-				commands[command].run(options, message, callback);
-			} else {
-				message.content = message_arr.join(" ");
-				commands[command].run(options, message, callback);
-			}
+			message.content = message_arr.join(" ");
+			commands[command].run(options, message, callback);
 		} else {
 			callback(new Error("Command is invalid."), null);
 		}
@@ -596,34 +591,54 @@ function googleImg(query, callback) {
 
 /**
  * Gets the weather information based on the location query
- * @param  {string} query
+ * @param  {Object} options
+ * @param  {Message} message
  * @param  {Function} callback
  * @return {void}
  */
-function weather(query, callback) {
-	let request_url = conf.urls.weatherstart 
-		+ process.env.WEATHER 
-		+ conf.urls.weatherend
-		+ query + '.json';
+function weather(options, message, callback) {
+	let query = message.content,
+		userWeatherLocation = "";
+	if (options['set']) {
+		redisClient.hset("weather", message.author.toString(), message.content);
+	}
 
-	request(request_url, (error, response, body) => {
-		if (error || response.statusCode !== 200) {
-			callback(new Error("Wunderground error."), "Bad Request.");
+	redisClient.hget("weather", message.author.toString(), (err, res) => {
+		if (err) {
+			userWeatherLocation = null;
+		} else {
+			userWeatherLocation = res;
 		}
-		else {
-			let responseObj = JSON.parse(body);
-			if (responseObj.location != undefined) {
-				let cityweather = responseObj.current_observation;
-				let cityloc = responseObj.location;
-				let response = "It is currently " + cityweather.temperature_string
-					+ " in " + cityloc.city + ".\n"
-					+ "The weather there is currently " + cityweather.weather + ".";
-				callback(null, response);
-			} else {
-				callback(null, "No city :(");
+		if (!!userWeatherLocation && !query) {
+			query = userWeatherLocation;
+		}
+
+		let request_url = conf.urls.weatherstart 
+			+ process.env.WEATHER 
+			+ conf.urls.weatherend
+			+ query + '.json';
+
+
+		request(request_url, (error, response, body) => {
+			if (error || response.statusCode !== 200) {
+				callback(new Error("Wunderground error."), "Bad Request.");
 			}
-		}
+			else {
+				let responseObj = JSON.parse(body);
+				if (responseObj.location != undefined) {
+					let cityweather = responseObj.current_observation;
+					let cityloc = responseObj.location;
+					let response = "It is currently " + cityweather.temperature_string
+						+ " in " + cityloc.city + ".\n"
+						+ "The weather there is currently " + cityweather.weather + ".";
+					callback(null, response);
+				} else {
+					callback(null, "No city :(");
+				}
+			}
+		});
 	});
+	
 }
 
 /**
