@@ -24,7 +24,7 @@ let bot 		= new Discord.Client(),
 	redisURL 	= url.parse(process.env.REDIS_URL),
 	redisClient = redis.createClient(redisURL.port, redisURL.hostname),
 	app     	= express(),
-	messages	= [],
+	messages	= {},
 	reminders	= [];
 
 // Bools
@@ -316,7 +316,7 @@ var commands = {
 	},
 	"delete" : {
 		run: (options, message, callback) => {
-			var lastMessage = messages.pop();
+			var lastMessage = messages[message.channel.id] ? messages[message.channel.id].pop() : null;
 			if (lastMessage) {
 				bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
 					if (err) {
@@ -331,7 +331,7 @@ var commands = {
 	"flush" : {
 		run: (options, message, callback) => {
 			while (messages.length) {
-				var lastMessage = messages.pop();
+				var lastMessage = messages[message.channel.id] ? messages[message.channel.id].pop() : null;
 				if (lastMessage) {
 					bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
 						if (err) {
@@ -416,7 +416,11 @@ let autoResponses = {
 		run: (callback) => {
 			callback(null, conf.urls.leigong);
 		}
-	}
+	},
+}
+
+let autoDeleteList = {
+	"!airhorn": true
 }
 
 /**
@@ -510,6 +514,17 @@ function autoResponse(message, callback) {
 				callback(null, response);
 			});
 		}
+	}
+}
+
+/**
+ * Auto deletes messages
+ * @param  {Message} message
+ * @return {void}
+ */
+function autoDelete(message) {
+	if (autoDeleteList[message.content]) {
+		bot.deleteMessage(message);
 	}
 }
 
@@ -696,12 +711,22 @@ function handleMessageSent(err, message) {
 		console.log(err);
 		return;
 	}
-	messages.push(message);
-	if (messages.length > MAX_MESSAGES_IN_MEMORY) {
-		messages.shift();
+	if (!messages[message.channel.id]) {
+		messages[message.channel.id] = [];
+	}
+	messages[message.channel.id].push(message);
+
+	if (messages[message.channel.id].length > MAX_MESSAGES_IN_MEMORY) {
+		messages[message.channel.id].shift();
 	}
 }
 
+/**
+ * Adds a timer for reminders
+ * @param {Object} timestamp
+ * @param {string} reminder
+ * @returns {void}
+ */
 function addTimer(timestamp, reminder) {
 	let currentTimestamp = Date.now();
 	setTimeout(function() {
@@ -744,5 +769,6 @@ bot.on("message", function(message){
 			bot.sendMessage(message.channel, response, handleMessageSent);
 		}
 	});
+	autoDelete(message);
 });
 
