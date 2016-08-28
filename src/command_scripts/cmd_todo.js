@@ -11,7 +11,7 @@
 
 let async = require('async'),
 	redisClient = require('../redisClient'),
-	{ isPositiveInteger } = require('../botUtils');
+	isPositiveInteger = require('../botUtils').isPositiveInteger;
 
 // ---------------------------------
 // Private

@@ -12,7 +12,8 @@
 let conf = require('../config.json'),
 	redisClient = require('../redisClient'),
 	chrono = require('chrono-node'),
-	{ addTimer, getFirstWord } = require('../botUtils');
+	addTimer = require('../botUtils').addTimer,
+	getFirstWord = require('../botUtils').getFirstWord;
 
 // ---------------------------------
 // Private
