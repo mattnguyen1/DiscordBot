@@ -1,1 +1,1 @@
-worker: ./node_modules/.bin/babel-node --presets es2015 ./src/bot.js
+worker: ./node_modules/babel-cli/bin/babel-node.js ./src/bot.js
