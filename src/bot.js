@@ -9,7 +9,7 @@
 // Requirements
 // ---------------------------------
 
-import "babel-register";
+require("babel-register");
 
 let conf 			= require('./config.json'),
 	extend 			= require('extend'),
