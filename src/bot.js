@@ -9,8 +9,6 @@
 // Requirements
 // ---------------------------------
 
-require("babel-register");
-
 let conf 			= require('./config.json'),
 	extend 			= require('extend'),
 	async			= require('async'),
