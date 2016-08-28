@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mattnguyen1/DiscordBot#readme",
   "dependencies": {
+    "async": "^2.0.1",
     "chrono-node": "^1.2.4",
     "discord.js": "^8.1.0",
     "express": "^4.13.3",

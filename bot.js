@@ -7,6 +7,7 @@ let conf 	= require('./config.json');
 
 // Dependencies
 let jsdom			= require('jsdom'),
+	async			= require('async'),
 	url 			= require('url'),
 	request 		= require('request'),
 	redis			= require('redis'),
@@ -364,6 +365,77 @@ var commands = {
 	"playing" : {
 		run: (options, message, callback) => {
 			bot.setPlayingGame(message.content, callback);
+		}
+	},
+	"todo" : {
+		run: (options, message, callback) => {
+			let todoList = null;
+			if(options['clear']) {
+				redisClient.del("todo");
+				return;
+			}
+			async.waterfall([
+				(waterfallCallback) => {
+					if(options['add']) {
+						redisClient.lpush("todo", message.content, (err, res) => {
+							if (err) {
+								waterfallCallback(err);
+								return;
+							}
+						});
+					} else if (options['remove']) {
+						if (isPositiveInteger(message.content)) {
+							let indexToRemove = parseInt(message.content);
+							async.waterfall([
+								(removeWaterfallCallback) => {
+									redisClient.lset("todo", indexToRemove-1, "DELETED", removeWaterfallCallback);
+								},
+								(val, removeWaterfallCallback) => {
+									redisClient.lrem("todo", 1, "DELETED", removeWaterfallCallback);
+								}
+							], (err, val) => {
+								if (err) {
+									waterfallCallback(err);
+									return;
+								}
+							});
+						};
+					}
+					waterfallCallback();
+				},
+				(waterfallCallback) => {
+					redisClient.llen("todo", (err, len) => {
+						if (err) {
+							waterfallCallback(err);
+							return;
+						}
+
+						waterfallCallback(null, len);
+					});
+				},
+				(len, waterfallCallback) => {
+					redisClient.lrange("todo", 0, len, (err, arr) => {
+						if (err) {
+							waterfallCallback(err);
+							return;
+						}
+
+						waterfallCallback(null, arr);
+					});
+				}
+			], (err, res) => {
+				if (err) {
+					callback(err);
+					return;
+				}
+				let formattedList = "TODO: \n";
+				for (let i = 1; i <= res.length; i++) {
+					formattedList += i + ": " + res[i-1] + "\n";
+				}
+
+				callback(null, formattedList);
+			});
+
 		}
 	},
 	"help" : {
