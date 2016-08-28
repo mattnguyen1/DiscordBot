@@ -23,24 +23,29 @@ A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.
 	Query can be US state/city, US zipcode, country/city, (latitude,longitude), airport code.
 	Using http://www.wunderground.com/weather/api/d/docs
 
+#####Remind
+	<name-of-bot> remind <reminder-with-time>
+
+#####Wolfram
+	<name-of-bot> wolfram <query>
+
+#####Todo
+	<name-of-bot> todo
+	<name-of-bot> -add todo <task>
+	<name-of-bot> -remove todo <task-index>
+
+#####Delete
+	// Delete the last bot message on the channel 
+	<name-of-bot> delete
+
+	// Delete the last 100 bot message on the channel
+	<name-of-bot> flush
+
 #####Roll
 	/roll <lower num (optional)> <higher num (optional)>
 
-#####Join Server
-	<name-of-bot> join <server-invite-link>
-	
-#####Leave Server
-	<name-of-bot> leave
-
 # To Run:
 
-- Have node.js installed
-- npm install
+- setup an application on Heroku using the .env-template to fill out config settings
+- setup .env using the .env-template for local Heroku development
 - modify config.json to your preferences
-
-# To Do:
-
-- Create an option to use an auth.json instead of heroku env vars
-- Add google search query
-- Add torrent link grabber (maybe)
-- RSS news feed (maybe with search query)
