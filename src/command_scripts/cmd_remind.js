@@ -25,6 +25,7 @@ import { addTimer, getFirstWord } from "../botUtils";
  */
 let _remind = (options, message, callback) => {
 	let suffix = message.content;
+	let target = message.author;
 	let zeroPad = (num) => {
 		if (num < 10) {
 			return "0" + num;
@@ -32,10 +33,16 @@ let _remind = (options, message, callback) => {
 		return num;
 	};
 
-	// @TODO(mattnguyen1) 2016-08-24: Make this parse a user to @mention them
-	if (getFirstWord(suffix.toLowerCase()) === "me") {
+	// Figure out who the reminder should @mention
+	let potentialTarget = getFirstWord(suffix);
+	if (potentialTarget.toLowerCase() === 'me') {
 		suffix = suffix.slice(3);
 	}
+	if (potentialTarget.substring(0,2) === '<@') {
+		suffix = suffix.slice(potentialTarget.length+1);
+		target = potentialTarget;
+	}
+
 	// Use chrono to parse the string for a time
 	let result = chrono.parse(suffix)[0];
 	if (!(result && result.index !== undefined && result.text && result.start && result.start.date())) {
@@ -62,18 +69,20 @@ let _remind = (options, message, callback) => {
 		minute = result.start.get('minute'),
 		second = result.start.get('second'),
 		ampm = hour < 12 ? "AM" : "PM",
-		reminderMessage = message.author + ": " + reminderText;
+		reminderMessage = target + ": " + reminderText;
 
 	hour = (hour%12) === 0 ? 12 : (hour % 12);
 
 	let timestamp = {
-		author: message.author.username,
+		target: target.username ? target.username : target,
 		channel: message.channel.id,
 		time: Date.parse(result.start.date())
 	}
+
+	// Create reminder in redis and add a setTimeout timer
 	redisClient.hset("reminders", JSON.stringify(timestamp), reminderMessage);
 	addTimer(timestamp, reminderMessage);
-	callback(null, message.author + ": I will remind you on " 
+	callback(null, target + ": I will remind you on " 
 		+ month + "/" + day + "/" + year + " @ " // Date
 		+ hour + ":" + zeroPad(minute) + " " + ampm + "(PST)" // Time
 		+ " " + actionWord
