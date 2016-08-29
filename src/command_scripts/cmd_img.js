@@ -3,14 +3,12 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	request = require('request');
+import conf from "../config.json";
+import request from "request";
 
 // ---------------------------------
 // Private
@@ -58,10 +56,8 @@ let _googleImage = (options, message, callback) => {
 	});
 }
 
-module.exports = {
-	"image" : {
-		run: _googleImage,
-		usage: "image <query>",
-		description: "Returns a random image based on search query."
-	}
+module.exports.image = {
+	run: _googleImage,
+	usage: "image <query>",
+	description: "Returns a random image based on search query."
 }

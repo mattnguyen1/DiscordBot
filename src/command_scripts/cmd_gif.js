@@ -3,14 +3,12 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	request = require('request');
+import conf from "../config.json";
+import request from "request";
 
 // ---------------------------------
 // Private
@@ -56,10 +54,8 @@ let _gif = (options, message, callback) => {
 	});
 }
 
-module.exports = {
-	"gif" : {
-		run: _gif,
-		usage: "gif <query>",
-		description: "Searches and outputs a Giphy gif based on query text."
-	}
+module.exports.gif = {
+	run: _gif,
+	usage: "gif <query>",
+	description: "Searches and outputs a Giphy gif based on query text."
 };

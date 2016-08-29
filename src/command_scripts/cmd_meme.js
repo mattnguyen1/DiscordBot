@@ -3,14 +3,12 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	request = require('request');
+import conf from "../config.json";
+import request from "request";
 
 // ---------------------------------
 // Private
@@ -91,10 +89,8 @@ let _meme = (options, message, callback) => {
 	}
 }
 
-module.exports = {
-	"meme" : {
-		run: _meme,
-		usage: "meme <template_id> \"<top-text>\" \"<?bottom-text>\"",
-		description: "Creates a meme from imgflip. Templates can be found with \"meme help\""
-	}
+module.exports.meme = {
+	run: _meme,
+	usage: "meme <template_id> \"<top-text>\" \"<?bottom-text>\"",
+	description: "Creates a meme from imgflip. Templates can be found with \"meme help\""
 }

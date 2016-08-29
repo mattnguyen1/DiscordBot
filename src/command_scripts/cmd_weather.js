@@ -3,14 +3,13 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	request = require('request');
+import conf from "../config.json";
+import request from "request";
+import redisClient from "../redisClient";
 
 // ---------------------------------
 // Private
@@ -67,12 +66,10 @@ let _weather = (options, message, callback) => {
 	});
 }
 
-module.exports = {
-	"weather" : {
-		run: _weather,
-		usage: "weather <?location_query> \n"
-			+ "Options: \n"
-			+ "\t -set: Will save the query for the user.",
-		description: "Gets the weather information based on the location query"
-	}
+module.exports.weather = {
+	run: _weather,
+	usage: "weather <?location_query> \n"
+		+ "Options: \n"
+		+ "\t -set: Will save the query for the user.",
+	description: "Gets the weather information based on the location query"
 }

@@ -3,14 +3,16 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let bot = require('../discordClient'),
-	base64 = require('node-base64-image');
+import bot from "../discordClient";
+import base64 from "node-base64-image";
+
+// ---------------------------------
+// Const
+// ---------------------------------
 
 const 	MS_IN_SECONDS = 1000,
 		MS_IN_MINUTES = 1000 * 60,
@@ -22,7 +24,7 @@ const 	MS_IN_SECONDS = 1000,
 // ---------------------------------
 
 module.exports = {
-	"uptime": {
+	uptime: {
 		run: (options, message, callback) => {
 			let seconds = Math.floor(bot.uptime / MS_IN_SECONDS) % 60,
 				minutes = Math.floor(bot.uptime / MS_IN_MINUTES) % 60,
@@ -31,7 +33,7 @@ module.exports = {
 			callback(null, days + "d " + hours + "h " + minutes + "m " + seconds + "s");
 		}
 	},
-	"avatar" :  {
+	avatar:  {
 		run: (options, message, callback) => {
 			base64.encode(message.content, {}, (err, base64Resolvable) => {
 				if (err) {
@@ -48,12 +50,12 @@ module.exports = {
 			})
 		}
 	},
-	"playing" : {
+	playing: {
 		run: (options, message, callback) => {
 			bot.setPlayingGame(message.content, callback);
 		}
 	},
-	"help" : {
+	help: {
 		run: (options, message, callback) => {
 			let response = "Here are some of the commands I can do!\n";
 			response +=  "\t" + name + " gif <query>\n";

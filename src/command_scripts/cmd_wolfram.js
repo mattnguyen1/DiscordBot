@@ -3,15 +3,14 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	wolframClient = require('node-wolfram'),
-	wolfram = new wolframClient(process.env.WOLFRAM_KEY);
+import conf from "../config.json";
+import wolframClient from "node-wolfram";
+
+let wolfram = new wolframClient(process.env.WOLFRAM_KEY);
 
 // ---------------------------------
 // Private
@@ -57,10 +56,8 @@ let _wolfram = (options, message, callback) => {
 	});
 }
 
-module.exports = {
-	"wolfram" : {
-		run: _wolfram,
-		usage: "wolfram <query>",
-		description: "Searches using the Wolfram search engine."
-	}
+module.exports.wolfram = {
+	run: _wolfram,
+	usage: "wolfram <query>",
+	description: "Searches using the Wolfram search engine."
 }

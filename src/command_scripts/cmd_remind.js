@@ -3,17 +3,14 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	redisClient = require('../redisClient'),
-	chrono = require('chrono-node'),
-	addTimer = require('../botUtils').addTimer,
-	getFirstWord = require('../botUtils').getFirstWord;
+import conf from "../config.json";
+import redisClient from "../redisClient";
+import chrono from "chrono-node";
+import { addTimer, getFirstWord } from "../botUtils";
 
 // ---------------------------------
 // Private
@@ -83,10 +80,8 @@ let _remind = (options, message, callback) => {
 		+ "```" + reminderText + "```");
 }
 
-module.exports = {
-	"remind": {
-		run: _remind,
-		usage: "remind <query + time>",
-		description: "Creates a reminder set to a time based on NL processed query."
-	}
+module.exports.remind = {
+	run: _remind,
+	usage: "remind <query + time>",
+	description: "Creates a reminder set to a time based on NL processed query."
 }

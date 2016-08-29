@@ -3,14 +3,12 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf = require('../config.json'),
-	jsdom = require('jsdom');
+import conf from "../config.json";
+import jsdom from "jsdom";
 
 // ---------------------------------
 // Private
@@ -49,13 +47,11 @@ let _wcl = (options, message, callback) => {
 	});
 }
 
-module.exports = {
-	"wcl": {
-		run: _wcl,
-		usage: "wcl <guild-alias> \n"
-			+ "Options: \n"
-			+ "\t -set: wcl <wcl-id> <guild-alias>\n\n"
-			+ "Example: wcl 123 my cool guild",
-		description: "Obtain the latest Warcraft Log for the given guild ID"
-	}
+module.exports.wcl = {
+	run: _wcl,
+	usage: "wcl <guild-alias> \n"
+		+ "Options: \n"
+		+ "\t -set: wcl <wcl-id> <guild-alias>\n\n"
+		+ "Example: wcl 123 my cool guild",
+	description: "Obtain the latest Warcraft Log for the given guild ID"
 }

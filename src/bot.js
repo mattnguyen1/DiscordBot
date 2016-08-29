@@ -3,34 +3,35 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let conf 			= require('./config.json'),
-	extend 			= require('extend'),
-	async			= require('async'),
-	url 			= require('url'),
-	request 		= require('request'),
-	express 		= require('express'),
-	redisClient		= require('./redisClient'),
-	bot 			= require('./discordClient'),
-	messages		= require('./botUtils').messages,
-	addTimer		= require('./botUtils').addTimer;
+import conf from "./config.json";
+import extend from "extend";
+import async from "async";
+import url from "url";
+import request from "request";
+import express from "express";
+import redisClient from "./redisClient";
+import bot from "./discordClient";
+import { messages, addTimer } from "./botUtils";
 
-// Bot Vars
-let	name 		= "",
-	app     	= express(),
-	commands	= {},
-	slash_commands = {};
+// ---------------------------------
+// Vars
+// ---------------------------------
 
-// Bools
-let sfw		= false,
+let	name = "",
+	app = express(),
+	commands = {},
+	slash_commands = {},
+	sfw = false,
 	isListeningOnPort = false;
 
-// Constants
+// ---------------------------------
+// Const
+// ---------------------------------
+
 const MS_IN_SECONDS = 1000,
 		MS_IN_MINUTES = 1000 * 60,
 		MS_IN_HOURS	= 1000 * 60 * 60,

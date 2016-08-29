@@ -3,13 +3,11 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let { isPositiveInteger } = require('../botUtils');
+import { isPositiveInteger } from "../botUtils";
 
 // ---------------------------------
 // Private
@@ -61,11 +59,9 @@ let _rollHandler = (message, callback) => {
 	}
 }
 
-module.exports = {
-	"roll" : {
-		run: _rollHandler,
-		usage: "/roll <?low> <?high>",
-		description: "Rolls a random number between 1-100, or the given range"
-	}
+module.exports.roll = {
+	run: _rollHandler,
+	usage: "/roll <?low> <?high>",
+	description: "Rolls a random number between 1-100, or the given range"
 }
 

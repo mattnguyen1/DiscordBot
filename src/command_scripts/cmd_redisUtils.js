@@ -3,13 +3,11 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let redisClient = require('../redisClient');
+import redisClient from "../redisClient";
 
 // ---------------------------------
 // Public

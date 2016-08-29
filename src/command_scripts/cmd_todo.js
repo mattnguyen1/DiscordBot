@@ -3,15 +3,13 @@
  * @author mattnguyen1
  */
 
-"use strict";
-
 // ---------------------------------
 // Requirements
 // ---------------------------------
 
-let async = require('async'),
-	redisClient = require('../redisClient'),
-	isPositiveInteger = require('../botUtils').isPositiveInteger;
+import async from "async";
+import redisClient from "../redisClient";
+import { isPositiveInteger } from "../botUtils";
 
 // ---------------------------------
 // Private
@@ -87,14 +85,12 @@ let _todo = (options, message, callback) => {
 
 }
 
-module.exports = {
-	"todo" : {
-		run: _todo,
-		usage: "todo \n"
-			+ "Options: \n"
-			+ "\t -add: todo <task> will add the task to the list. \n"
-			+ "\t -remove: todo <task-number> will remove the task from the list. \n",
-		description: "Displays the todo list set on the bot."
-	}
-}
+module.exports.todo = {
+	run: _todo,
+	usage: "todo \n"
+		+ "Options: \n"
+		+ "\t -add: todo <task> will add the task to the list. \n"
+		+ "\t -remove: todo <task-number> will remove the task from the list. \n",
+	description: "Displays the todo list set on the bot."
+};
 	
