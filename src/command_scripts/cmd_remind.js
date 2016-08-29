@@ -26,7 +26,7 @@ import { addTimer, getFirstWord } from "../botUtils";
 let _remind = (options, message, callback) => {
 	let suffix = message.content;
 	let target = message.author;
-	let channel = message.channel;
+	let channel = message.channel.id;
 	let zeroPad = (num) => {
 		if (num < 10) {
 			return "0" + num;
@@ -46,7 +46,7 @@ let _remind = (options, message, callback) => {
 
 	// Directed Message option
 	if (options['dm']) {
-		channel = target;
+		channel = target.id ? target.id : target.slice(2, target.length - 1);
 	}
 
 	// Use chrono to parse the string for a time
@@ -81,7 +81,7 @@ let _remind = (options, message, callback) => {
 
 	let timestamp = {
 		target: target.username ? target.username : target,
-		channel: channel.id,
+		channel: channel,
 		time: Date.parse(result.start.date())
 	}
 
