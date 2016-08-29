@@ -12,6 +12,8 @@ import redisClient from "../redisClient";
 import chrono from "chrono-node";
 import { addTimer, getFirstWord } from "../botUtils";
 
+const numberRegex = /\d+/g;
+
 // ---------------------------------
 // Private
 // ---------------------------------
@@ -40,13 +42,15 @@ let _remind = (options, message, callback) => {
 		suffix = suffix.slice(3);
 	}
 	if (potentialTarget.substring(0,2) === '<@') {
-		suffix = suffix.slice(potentialTarget.length+1);
+		suffix = suffix.split(' ');
+		suffix.shift();
+		suffix = suffix.join(' ');
 		target = potentialTarget;
 	}
 
 	// Directed Message option
 	if (options['dm']) {
-		channel = target.id ? target.id : target.slice(2, target.length - 1);
+		channel = target.id ? target.id : target.match(numberRegex)[0];
 	}
 
 	// Use chrono to parse the string for a time
