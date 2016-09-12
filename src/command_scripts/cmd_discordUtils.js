@@ -40,19 +40,16 @@ module.exports = {
 					callback("Failed to convert image.");
 					return;
 				}
-				bot.setAvatar(base64Resolvable, (err) => {
-					if (err) {
-						callback("Failed to set avatar.");
-						return;
-					}
-					callback("Avatar set.");
-				})
+				bot.user.setAvatar(base64Resolvable)
+					.then(user => callback('Avatar set.'))
+					.catch(console.log);
 			})
 		}
 	},
 	playing: {
 		run: (options, message, callback) => {
-			bot.setPlayingGame(message.content, callback);
+			bot.user.setStatus('online', message.content)
+				.catch(console.log);
 		}
 	},
 	help: {

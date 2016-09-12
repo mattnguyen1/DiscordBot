@@ -17,7 +17,6 @@ let _delete = (options, message, callback) => {
 	let lastMessage = messages[message.channel.id] ? messages[message.channel.id].pop() : null;
 	if (lastMessage) {
 		lastMessage.delete()
-			.then(callback)
 			.catch(console.log);
 	}
 	callback(null);
@@ -33,7 +32,6 @@ let _flush = (options, message, callback) => {
 		let lastMessage = messages[message.channel.id].pop();
 		if (lastMessage) {
 			lastMessage.delete()
-				.then(callback)
 				.catch(console.log);
 		}
 	}
