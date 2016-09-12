@@ -10,7 +10,8 @@
 import conf from "../config.json";
 import redisClient from "../redisClient";
 import chrono from "chrono-node";
-import { addTimer, getFirstWord } from "../botUtils";
+import { bot } from "../discordClient";
+import { addTimer, getFirstWord, stringifyJSON } from "../botUtils";
 
 const numberRegex = /\d+/g;
 
@@ -28,7 +29,7 @@ const numberRegex = /\d+/g;
 let _remind = (options, message, callback) => {
 	let suffix = message.content;
 	let target = message.author;
-	let channel = message.channel.id;
+	let channel = message.channel;
 	let zeroPad = (num) => {
 		if (num < 10) {
 			return "0" + num;
@@ -48,15 +49,10 @@ let _remind = (options, message, callback) => {
 		target = potentialTarget;
 	}
 
-	// Directed Message option
-	if (options['dm']) {
-		channel = target.id ? target.id : target.match(numberRegex)[0];
-	}
-
 	// Use chrono to parse the string for a time
 	let result = chrono.parse(suffix)[0];
 	if (!(result && result.index !== undefined && result.text && result.start && result.start.date())) {
-		callback(null, "Failed to parse reminder!");
+		callback("Failed to parse reminder!");
 		return;
 	}
 	// Get the resulting reminder text
@@ -84,15 +80,17 @@ let _remind = (options, message, callback) => {
 	hour = (hour % 12) === 0 ? 12 : (hour % 12);
 
 	let timestamp = {
-		target: target.username ? target.username : target,
-		channel: channel,
+		target: target.id,
+		dm: options['dm'],
+		channel: channel.id,
 		time: Date.parse(result.start.date())
 	}
 
 	// Create reminder in redis and add a setTimeout timer
-	redisClient.hset("reminders", JSON.stringify(timestamp), reminderMessage);
+	let cache = [];
+	redisClient.hset("reminders", stringifyJSON(timestamp), reminderMessage);
 	addTimer(timestamp, reminderMessage);
-	callback(null, target + ": I will remind you on " 
+	callback(target + ": I will remind you on " 
 		+ month + "/" + day + "/" + year + " @ " // Date
 		+ hour + ":" + zeroPad(minute) + " " + ampm + "(PST)" // Time
 		+ " " + actionWord

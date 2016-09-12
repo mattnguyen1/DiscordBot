@@ -7,7 +7,6 @@
 // Requirements
 // ---------------------------------
 
-import bot from "../discordClient";
 import { messages } from "../botUtils";
 
 // ---------------------------------
@@ -17,34 +16,28 @@ import { messages } from "../botUtils";
 let _delete = (options, message, callback) => {
 	let lastMessage = messages[message.channel.id] ? messages[message.channel.id].pop() : null;
 	if (lastMessage) {
-		bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
-			if (err) {
-				callback(err);
-				return;
-			}
-		});
+		lastMessage.delete()
+			.then(callback)
+			.catch(console.log);
 	}
-	callback(null, null);
+	callback(null);
 }
 
 let _flush = (options, message, callback) => {
 	if (!messages[message.channel.id]) {
-		callback("No messages to delete.", null);
+		callback(null);
 		return;
 	}
 
 	while (messages[message.channel.id].length) {
 		let lastMessage = messages[message.channel.id].pop();
 		if (lastMessage) {
-			bot.deleteMessage(lastMessage, { wait: 0 }, (err, response) => {
-				if (err) {
-					callback(err);
-					return;
-				}
-			});
+			lastMessage.delete()
+				.then(callback)
+				.catch(console.log);
 		}
 	}
-	callback(null, null);
+	callback(null);
 }
 
 module.exports = {

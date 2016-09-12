@@ -7,7 +7,7 @@
 // Requirements
 // ---------------------------------
 
-import bot from "../discordClient";
+import { bot, name } from "../discordClient";
 import base64 from "node-base64-image";
 
 // ---------------------------------
@@ -30,22 +30,22 @@ module.exports = {
 				minutes = Math.floor(bot.uptime / MS_IN_MINUTES) % 60,
 				hours = Math.floor(bot.uptime / MS_IN_HOURS) % 24,
 				days = Math.floor(bot.uptime / MS_IN_DAYS) 
-			callback(null, days + "d " + hours + "h " + minutes + "m " + seconds + "s");
+			callback(days + "d " + hours + "h " + minutes + "m " + seconds + "s");
 		}
 	},
 	avatar:  {
 		run: (options, message, callback) => {
 			base64.encode(message.content, {}, (err, base64Resolvable) => {
 				if (err) {
-					callback(null, "Failed to convert image.");
+					callback("Failed to convert image.");
 					return;
 				}
 				bot.setAvatar(base64Resolvable, (err) => {
 					if (err) {
-						callback(null, "Failed to set avatar.");
+						callback("Failed to set avatar.");
 						return;
 					}
-					callback(null, "Avatar set.");
+					callback("Avatar set.");
 				})
 			})
 		}
@@ -65,7 +65,12 @@ module.exports = {
 			response +=	 "\t" + name + " wolfram <query>\n";
 			response +=  "\t /roll <lower (optional)> <higher (optional)>\n\n";
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
-			callback(null, response);
+			callback(response);
+		}
+	},
+	channels: {
+		run: (options, message, callback) => {
+			callback(bot.fetchUser(message.content));
 		}
 	}
 };

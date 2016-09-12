@@ -37,7 +37,7 @@ let _googleImage = (options, message, callback) => {
 
 	request(requestParams, (error, response, body) => {
 		if (error || response.statusCode !== 200) {
-			callback(new Error("Google error."), "Bad Request.");
+			callback("Bad Request.");
 		}
 		else {
 			let responseObj = JSON.parse(body);
@@ -45,12 +45,12 @@ let _googleImage = (options, message, callback) => {
 				if (responseObj.items.length) {
 					let random_index = Math.floor(Math.random() * responseObj.items.length);
 					let response_url = responseObj.items[random_index].link;
-					callback(null, response_url);
+					callback(response_url);
 				} else {
-					callback(null, "No results :(");
+					callback("No results :(");
 				}
 			} else {
-				callback(null, "No results :(");
+				callback("No results :(");
 			}
 		}
 	});

@@ -45,17 +45,17 @@ let _rollHandler = (message, callback) => {
 
 	// Default roll is from 1-100
 	if (sfx_arr.length == 1) {
-		callback(null,_roll(message.author, 1, 100));
+		callback(_roll(message.author, 1, 100));
 	}
 	if (sfx_arr.length == 2) {
 		if (lo == "rick") {
-			callback(null,"https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+			callback("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 		}
 		if (isPositiveInteger(lo)) {
-			callback(null,_roll(message.author, sfx_arr[1]));
+			callback(_roll(message.author, sfx_arr[1]));
 		}
 	} else if (sfx_arr.length == 3) {
-		callback(null,_roll(message.author, sfx_arr[1], sfx_arr[2]));
+		callback(_roll(message.author, sfx_arr[1], sfx_arr[2]));
 	}
 }
 

@@ -27,16 +27,16 @@ let _wolfram = (options, message, callback) => {
 	let suffix = message.content;
 	wolfram.query(suffix, (err, result) => {
 		if (err) {
-			callback(null, "Bad query.");
+			callback("Bad query.");
 		} else {
 			let response = "";
 			if (result.queryresult == undefined) {
-				callback(null, "Bad query.");
+				callback("Bad query.");
 				return;
 			}
 			if (result.queryresult.pod == undefined) {
 				console.log(result.queryresult);
-				callback(null, "Bad query.");
+				callback("Bad query.");
 				return;
 			}
 			for(let a=0; a<result.queryresult.pod.length && a < 5; a++) {
@@ -51,7 +51,7 @@ let _wolfram = (options, message, callback) => {
 				}
 			}
 			response += "\nSee the full answer at " + conf.urls.wolfram + encodeURIComponent(suffix);
-			callback(null, response);
+			callback(response);
 		}
 	});
 }

@@ -40,16 +40,16 @@ let _gif = (options, message, callback) => {
 		if (error || response.statusCode !== 200) {
 			console.error("giphy: Got error: " + body);
 			console.log(error);
-			callback(new Error("Giphy error."), "Bad Request.");
+			callback("Bad Request.");
 			return;
 		}
 		let responseObj = JSON.parse(body);
 		if (responseObj.data.length) {
 			let random_index = Math.floor(Math.random() * responseObj.data.length);
 			let response_url = responseObj.data[random_index].images.fixed_height.url;
-			callback(null, response_url);
+			callback(response_url);
 		} else {
-			callback(null, "No results :(");
+			callback("No results :(");
 		}
 	});
 }

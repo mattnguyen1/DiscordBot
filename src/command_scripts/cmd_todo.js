@@ -80,7 +80,7 @@ let _todo = (options, message, callback) => {
 			formattedList += i + ": " + res[i-1] + "\n";
 		}
 
-		callback(null, formattedList);
+		callback(formattedList);
 	});
 
 }

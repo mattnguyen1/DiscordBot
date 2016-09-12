@@ -14,8 +14,8 @@ import url from "url";
 import request from "request";
 import express from "express";
 import redisClient from "./redisClient";
-import bot from "./discordClient";
-import { messages, addTimer } from "./botUtils";
+import { bot } from "./discordClient";
+import { messages, addTimer, sendMessage } from "./botUtils";
 
 // ---------------------------------
 // Vars
@@ -65,7 +65,7 @@ function init() {
 	});
 
 	// Login with the token secret
-	bot.loginWithToken(process.env.CLIENT_SECRET);
+	bot.login(process.env.CLIENT_SECRET);
 
 	// Load Reminders
 	redisClient.hgetall("reminders", (err, obj) => {
@@ -144,7 +144,7 @@ function onMessage(message, callback) {
 			message.content = message_arr.join(" ");
 			commands[command].run(options, message, callback);
 		} else {
-			callback(new Error("Command is invalid."), null);
+			callback();
 		}
 	// Throw an error if the request is not valid
 	} else {
@@ -163,13 +163,7 @@ function onSlash(message, callback) {
 	if (first.substring(0,1) == '/') {
 		let command = first.substring(1);
 		if (slash_commands[command] != null) {
-			slash_commands[command].run(message, (err, response) => {
-				if (err) {
-					callback(err);
-				} else {
-					callback(null, response);
-				}
-			});
+			slash_commands[command].run(message, callback);
 		}
 	}
 }
@@ -184,7 +178,7 @@ function autoResponse(message, callback) {
 	let message_arr = message.content.split(' ');
 	for (let i = 0; i < message_arr.length; i++) {
 		if (autoResponses[message_arr[i]] != null) {
-			callback(null, autoResponses[message_arr[i]]);
+			callback(autoResponses[message_arr[i]]);
 		}
 	}
 }
@@ -206,11 +200,7 @@ function autoDelete(message) {
  * @param  {Message} message
  * @return {void}    
  */
-let handleMessageSent = (err, message) => {
-	if (err) {
-		console.log(err);
-		return;
-	}
+let handleMessageSent = (message) => {
 	if (!messages[message.channel.id]) {
 		messages[message.channel.id] = [];
 	}
@@ -221,13 +211,9 @@ let handleMessageSent = (err, message) => {
 	}
 }
 
-function handleMessageReceived(message, err, res) {
-	if (err) {
-		console.log(err);
-	} else {
-		if (res) {
-			bot.sendMessage(message.channel, res, handleMessageSent);
-		}
+function handleMessageReceived(message, res) {
+	if (res) {
+		sendMessage(message.channel, res, handleMessageSent);
 	}
 }
 
@@ -235,7 +221,7 @@ init();
 
 // Bot initializiation
 bot.on("ready", function() {
-	name = bot.internal.user.username;
+	name = bot.user.username;
 	console.log(name + " is online.");
 });
 
@@ -246,4 +232,3 @@ bot.on("message", function(message){
 	autoResponse(message, handleMessageReceived.bind(this, message));
 	autoDelete(message);
 });
-

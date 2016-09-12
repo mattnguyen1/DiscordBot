@@ -57,9 +57,9 @@ let _weather = (options, message, callback) => {
 					let response = "It is currently " + cityweather.temperature_string
 						+ " in " + cityloc.city + ".\n"
 						+ "The weather there is currently " + cityweather.weather + ".";
-					callback(null, response);
+					callback(response);
 				} else {
-					callback(null, "No city :(");
+					callback("No city :(");
 				}
 			}
 		});

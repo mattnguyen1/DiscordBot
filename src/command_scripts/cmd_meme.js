@@ -43,9 +43,9 @@ let _imgflip = (template_id, top_text, bot_text, callback) => {
 			let responseObj = JSON.parse(body);
 			if (responseObj.success) {
 				let response_url = responseObj.data.url;
-				callback(null, response_url);
+				callback(response_url);
 			} else {
-				callback(null, "Bad meme :(");
+				callback("Bad meme :(");
 			}
 		}
 	});
@@ -71,7 +71,7 @@ let _meme = (options, message, callback) => {
 		}
 		response += "\nUsage:\n";
 		response += "\t" + name + " meme meme_id \"<top-text>\" \"<bot-text>\"";
-		callback(null, response);
+		callback(response);
 		return;
 	}
 

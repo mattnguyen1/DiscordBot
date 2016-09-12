@@ -28,7 +28,7 @@ let _wcl = (options, message, callback) => {
 		let guildId = suffix_arr[0];
 		suffix_arr.shift();
 		redisClient.hset("wcl", suffix_arr[0], suffix_arr.join(' '));
-		callback(null, "Set " + suffix_arr[0] + " as " + suffix_arr[1]);
+		callback("Set " + suffix_arr[0] + " as " + suffix_arr[1]);
 		return;
 	}
 	redisClient.hget("wcl", suffix, (err, value) => {
@@ -37,10 +37,10 @@ let _wcl = (options, message, callback) => {
 			["http://code.jquery.com/jquery.js"],
 			(err, window) => {
 				if (window.$("tr td a") && window.$("tr td a")[0]) {
-					callback(null, window.$("tr td a")[0].href);	
+					callback(window.$("tr td a")[0].href);	
 					return;		  		
 				} else {
-					callback(null, "No logs found :(");
+					callback("No logs found :(");
 				}
 			}
 		);
