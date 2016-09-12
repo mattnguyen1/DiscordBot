@@ -6,6 +6,9 @@
   "scripts": {
     "start": "./node_modules/babel-cli/bin/babel-node.js ./src/bot.js"
   },
+  "engines": {
+    "node": "6.2.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mattnguyen1/DiscordBot.git"
@@ -19,6 +22,7 @@
   "dependencies": {
     "async": "^2.0.1",
     "babel-cli": "^6.14.0",
+    "babel-plugin-transform-strict-mode": "^6.11.3",
     "babel-preset-es2015": "^6.14.0",
     "chrono-node": "^1.2.4",
     "discord.js": "^9.1.1",
