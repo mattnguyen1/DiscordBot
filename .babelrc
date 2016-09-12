@@ -1,7 +1,6 @@
 {
   "presets": [
-  	"es2015",
-  	"transform-strict-mode"
+  	"es2015"
   ]
 
 }
