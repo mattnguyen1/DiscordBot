@@ -67,10 +67,5 @@ module.exports = {
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
 			callback(response);
 		}
-	},
-	channels: {
-		run: (options, message, callback) => {
-			callback(bot.fetchUser(message.content));
-		}
 	}
 };
