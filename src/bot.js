@@ -190,7 +190,8 @@ function autoResponse(message, callback) {
  */
 function autoDelete(message) {
 	if (autoDeleteList[message.content]) {
-		bot.deleteMessage(message);
+		message.delete()
+			.catch(console.log);
 	}
 }
 
