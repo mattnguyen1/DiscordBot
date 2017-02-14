@@ -40,7 +40,6 @@ const MS_IN_SECONDS = 1000,
 		MAX_MESSAGES_IN_MEMORY = 100;
 
 const autoResponses = {
-	"Kappa": conf.urls.Kappa,
 	"lategong" : conf.urls.leigong
 }
 
