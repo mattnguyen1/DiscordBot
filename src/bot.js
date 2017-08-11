@@ -47,6 +47,22 @@ const autoDeleteList = {
 	"!airhorn": true
 }
 
+function isBotCommand(str) {
+	return str === name.toLowerCase();
+}
+
+function isOption(str) {
+	return str.substring(0,1) === '-';
+}
+
+function getOptionFromString(str) {
+	return str.substring(1).toLowerCase();
+}
+
+function getCommandParams(splitMessage, paramStartIndex) {
+	return splitMessage.slice(paramStartIndex).join(' ');
+}
+
 // ---------------------------------
 // Public
 // ---------------------------------
@@ -105,10 +121,10 @@ function init() {
  * @return {void}
  */
 function onMessage(message, callback) {
-	let message_content = message.content;
-	let message_arr = message_content.split(' ');
-	let first_word = message_arr[0].toLowerCase();
-	let options = {};
+	let messageContent = message.content,
+		wordsInMessage = messageContent.split(' '),
+		firstWord = wordsInMessage[0].toLowerCase(),
+		options = {};
 
 	// Do not listen to own name
 	if (message.author.username === name) {
@@ -116,35 +132,39 @@ function onMessage(message, callback) {
 		return;
 	}
 
-	// Accept command if the first word is the name
-	if (first_word === name.toLowerCase()) {
-		// No commands
-		if (message_arr.length == 1) {
+	// No commands
+	if (wordsInMessage.length == 1) {
+		callback();
+		return;
+	}
+
+	if (isBotCommand(firstWord)) {
+		let messageIter = 1,
+			nextWord = wordsInMessage[messageIter],
+			command;
+
+		// Check if it's a command
+		if (!commands[nextWord]) {
 			callback();
 			return;
 		}
-		message_arr.shift();
 
-		// Options parse
-		while (message_arr[0].substr(0,1) == '-') {
-			let option = message_arr[0].substr(1).toLowerCase()
+		command = commands[nextWord];
+
+		// Parse options to pass in
+		while ((nextWord = wordsInMessage[++messageIter]) &&
+				isOption(nextWord)) {
+
+			let option = getOptionFromString(nextWord);
 			options[option] = true;
-			message_arr.shift();
 		}
 
-		// No command
-		if (message_arr.length == 0) {
-			callback();
+		// Add params if it exists
+		if (nextWord) {
+			let commandParams = getCommandParams(wordsInMessage, messageIter);
+			message.content = commandParams;
 		}
-
-		// Run the command
-		let command = message_arr.shift();
-		if (commands[command] != null) {
-			message.content = message_arr.join(" ");
-			commands[command].run(options, message, callback);
-		} else {
-			callback();
-		}
+	 	command.run(options, message, callback);
 	// Throw an error if the request is not valid
 	} else {
 		callback();
@@ -174,10 +194,10 @@ function onSlash(message, callback) {
  * @return {void}
  */
 function autoResponse(message, callback) {
-	let message_arr = message.content.split(' ');
-	for (let i = 0; i < message_arr.length; i++) {
-		if (autoResponses[message_arr[i]] != null) {
-			callback(autoResponses[message_arr[i]]);
+	let wordsInMessage = message.content.split(' ');
+	for (let i = 0; i < wordsInMessage.length; i++) {
+		if (autoResponses[wordsInMessage[i]] != null) {
+			callback(autoResponses[wordsInMessage[i]]);
 		}
 	}
 }
