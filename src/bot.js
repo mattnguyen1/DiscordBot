@@ -150,6 +150,7 @@ function onMessage(message, callback) {
 		}
 
 		command = commands[nextWord];
+		message.content = '';
 
 		// Parse options to pass in
 		while ((nextWord = wordsInMessage[++messageIter]) &&
