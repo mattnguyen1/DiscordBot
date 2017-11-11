@@ -36,8 +36,6 @@ let _googleImage = (options, message, callback) => {
 		};
 
 	request(requestParams, (error, response, body) => {
-		callback("Images disabled.");
-		return;
 		if (error || response.statusCode !== 200) {
 			console.log(error, response.statusCode);
 			callback("Bad Request.");
