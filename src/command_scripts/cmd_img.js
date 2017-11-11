@@ -9,10 +9,13 @@
 
 import conf from "../config.json";
 import request from "request";
+import { isImageURLNSFW } from "../util/sightengine-utils";
 
 // ---------------------------------
 // Private
 // ---------------------------------
+
+const isQueryNSFWCache = {};
 
 /**
  * Queries for a google image
@@ -46,7 +49,39 @@ let _googleImage = (options, message, callback) => {
 				if (responseObj.items.length) {
 					let random_index = Math.floor(Math.random() * responseObj.items.length);
 					let response_url = responseObj.items[random_index].link;
-					callback(response_url);
+
+					if (isQueryNSFWCache.hasOwnProperty(query)) {
+						if (isQueryNSFWCache[query] > 2000) {
+							callback("What's wrong with you?");
+							return;
+						} else if (isQueryNSFWCache[query] < -2) {
+							callback(response_url);
+							return;
+						}
+					}
+					isImageURLNSFW(response_url, (err, isNSFW) => {
+						if (err) {
+							callback("Couldn't detect if NSFW. Bailing out.");
+							return;
+						}
+
+						
+						if (isNSFW) {
+							if (isQueryNSFWCache.hasOwnProperty(query)) {
+								isQueryNSFWCache[query] += 1000;
+							} else {
+								isQueryNSFWCache[query] = 1000;
+							}
+							callback("Image flagged as NSFW.");
+						} else {
+							if (isQueryNSFWCache.hasOwnProperty(query)) {
+								isQueryNSFWCache[query] -= 1;
+							} else {
+								isQueryNSFWCache[query] = -1;
+							}
+							callback(response_url);
+						}
+					})
 				} else {
 					callback("No results :(");
 				}
