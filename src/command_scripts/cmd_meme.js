@@ -7,6 +7,7 @@
 // Requirements
 // ---------------------------------
 
+import { getBotName } from "../discordClient";
 import conf from "../config.json";
 import request from "request";
 
@@ -70,7 +71,7 @@ let _meme = (options, message, callback) => {
 			response += "\t" + key + "\n";
 		}
 		response += "\nUsage:\n";
-		response += "\t" + name + " meme meme_id \"<top-text>\" \"<bot-text>\"";
+		response += "\t" + getBotName() + " meme meme_id \"<top-text>\" \"<bot-text>\"";
 		callback(response);
 		return;
 	}

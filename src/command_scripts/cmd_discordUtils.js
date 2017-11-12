@@ -7,7 +7,7 @@
 // Requirements
 // ---------------------------------
 
-import { bot, name } from "../discordClient";
+import { bot, getBotName } from "../discordClient";
 import base64 from "node-base64-image";
 
 // ---------------------------------
@@ -54,12 +54,14 @@ module.exports = {
 	},
 	help: {
 		run: (options, message, callback) => {
+			const name = getBotName();
 			let response = "Here are some of the commands I can do!\n";
 			response +=  "\t" + name + " gif <query>\n";
 			response +=  "\t" + name + " image <query>\n";
 			response +=  "\t" + name + " meme help\n";
 			response +=  "\t" + name + " weather <zipcode>\n";
-			response +=	 "\t" + name + " wolfram <query>\n";
+			response +=  "\t" + name + " wolfram <query>\n";
+			response +=  "\t" + name + " remind <me/at-user> <time and reminder>\n";
 			response +=  "\t /roll <lower (optional)> <higher (optional)>\n\n";
 			response +=  "See more about me at https://github.com/mattnguyen1/DiscordBot";
 			callback(response);
