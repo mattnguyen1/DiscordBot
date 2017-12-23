@@ -17,6 +17,7 @@ import request from "request";
 const PRICE_ENDPOINT = '/prices/';
 const SPOT_PRICE_DELIM = '-';
 const SPOT_PRICE_ENDPOINT = '/spot';
+const EXCHANGE_PRICE_ENDPOINT = '/exchange-rates'
 const DEFAULT_CRYPTO = 'BTC';
 const DEFAULT_CURRENCY = 'USD';
 
@@ -42,12 +43,15 @@ const _crypto = (options, message, callback) => {
 	const CURRENCY_TYPE = params.length > 1 ? params[1] : DEFAULT_CURRENCY;
 	const DATE_PARAM = params.length > 2 ? params[2] : getCurrentDate();
 	const CRYPTO_EXCHANGE_URL_PARAM = CRYPTO_TYPE + SPOT_PRICE_DELIM + CURRENCY_TYPE;
-	const requestUrl = conf.urls.coinbase + PRICE_ENDPOINT + CRYPTO_EXCHANGE_URL_PARAM + SPOT_PRICE_ENDPOINT;
+
+	const FROM_CURRENCY = CRYPTO_TYPE.toUpperCase();
+	const TO_CURRENCY = CURRENCY_TYPE.toUpperCase();
+	const requestUrl = conf.urls.coinbase + EXCHANGE_PRICE_ENDPOINT;
 
 	const requestParams = {
 			url: requestUrl,
 			qs: {
-				date: DATE_PARAM
+				currency: FROM_CURRENCY
 			}
 		};
 
@@ -57,7 +61,7 @@ const _crypto = (options, message, callback) => {
 		} else {
 			let responseObj = JSON.parse(body);
 			if (responseObj.data) {
-				callback(`${CRYPTO_TYPE.toUpperCase()} to ${CURRENCY_TYPE.toUpperCase()} *(${DATE_PARAM})*: \`${responseObj.data.amount}\``);
+				callback(`\`${FROM_CURRENCY} to ${TO_CURRENCY}: ${responseObj.data.rates[TO_CURRENCY]}\``);
 			} else {
 				callback("No results :(");
 			}
@@ -67,6 +71,6 @@ const _crypto = (options, message, callback) => {
 
 module.exports.crypto = {
 	run: _crypto,
-	usage: "crypto <opt-crypto> <opt-currency> <opt-date>",
+	usage: "crypto <currency-from> <currency-to>",
 	description: "Returns the crypto exchange price via coinbase"
 }
