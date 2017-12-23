@@ -48,6 +48,7 @@ module.exports = {
 	},
 	playing: {
 		run: (options, message, callback) => {
+			console.log(message.content);
 			bot.user.setStatus('online', message.content)
 				.catch(console.log);
 		}
