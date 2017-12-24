@@ -156,7 +156,7 @@ function getPriceListString(toCurrency, prices, date) {
 const _crypto = (options, message, callback) => {
 	const params = message.content.split(' ');
 	const isRequestForList = params.length > 0 && params[0].toLowerCase() === 'list';
-	const fromCurrencyParam = params.length > 0 && !!params[0] ? params[0] : DEFAULT_CRYPTO;
+	let fromCurrencyParam = params.length > 0 && !!params[0] ? params[0] : DEFAULT_CRYPTO;
 	let toCurrencyParam = params.length > 1 ? params[1] : DEFAULT_CURRENCY;
 	let dateParam = params.length > 2 ? params[2] : null;
 
@@ -164,6 +164,9 @@ const _crypto = (options, message, callback) => {
 	if (isDateFormat(toCurrencyParam)) {
 		dateParam = toCurrencyParam;
 		toCurrencyParam = DEFAULT_CURRENCY;
+	} else if (isDateFormat(fromCurrencyParam)) {
+		dateParam = fromCurrencyParam;
+		fromCurrencyParam = DEFAULT_CRYPTO;
 	}
 
 	const FROM_CURRENCY = fromCurrencyParam.toUpperCase();
