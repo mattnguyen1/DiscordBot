@@ -1,0 +1,9 @@
+{
+	"c": "crypto",
+	"i": "image",
+	"g": "gif",
+	"w": "weather",
+	"wr": "wolfram",
+	"d": "delete",
+	"f": "flush"
+}

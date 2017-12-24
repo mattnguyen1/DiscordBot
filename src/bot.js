@@ -8,6 +8,7 @@
 // ---------------------------------
 
 import conf from "./config.json";
+import altCmds from "./altCommands.json"; 
 import extend from "extend";
 import async from "async";
 import url from "url";
@@ -144,9 +145,14 @@ function onMessage(message, callback) {
 			command;
 
 		// Check if it's a command
-		if (!commands[nextWord]) {
+		if (!commands[nextWord] && !altCmds[nextWord]) {
 			callback();
 			return;
+		}
+
+		// Use the alt command if that is what was passed in
+		if (!!altCmds[nextWord]) {
+			nextWord = altCmds[nextWord];
 		}
 
 		command = commands[nextWord];
