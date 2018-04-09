@@ -10,7 +10,8 @@
 		"leigong": "http://media3.giphy.com/media/I1r5jpUvdGra8/200.gif",
 		"wcl": "https://www.warcraftlogs.com/guilds/reportslist/",
 		"sightengine": "https://api.sightengine.com/1.0/check.json",
-		"coinbase": "https://api.coinbase.com/v2"
+		"coinbase": "https://api.coinbase.com/v2",
+		"dokkin": "https://dokk.in/api"
 	},
 
 	"giphy_params" : {
