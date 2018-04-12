@@ -18,6 +18,7 @@ const DOKKAN_CARD_API_PATH = "/cards";
 const DOKKAN_SEARCH_PARAM = "search_q=";
 const DEFAULT_LIMIT = 3;
 const DEFAULT_OFFSET = 0;
+const BASE_DOKKIN_URL = "https://dokk.in"
 
 // ---------------------------------
 // Private
@@ -47,7 +48,7 @@ function dokkan(options, message, callback) {
       // console.log("success", response)
       const cardResponse = JSON.parse(body);
       const cards = cardResponse.cards;
-      const cardUrls = cards.map((card) => card.url);
+      const cardUrls = cards.map((card) => BASE_DOKKIN_URL + card.url);
       const response = cardUrls.join("\n")
       callback(response);
     }
