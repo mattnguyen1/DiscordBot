@@ -1,5 +1,5 @@
 # Discord Bot
-A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>
+A Discord chat bot running off of <a href="https://github.com/hydrabolt/discord.js/">discord.js</a>.
 
 # To Run:
 
