@@ -15,7 +15,7 @@ import request from "request";
 // ---------------------------------
 
 const DOKKAN_CARD_API_PATH = "/cards";
-const DOKKAN_SEARCH_PARAM = "search_q=";
+const DOKKAN_SEARCH_PARAM = "q=";
 const DEFAULT_LIMIT = 3;
 const DEFAULT_OFFSET = 0;
 const BASE_DOKKIN_URL = "https://dokk.in"
