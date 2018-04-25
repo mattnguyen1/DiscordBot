@@ -40,7 +40,7 @@ let _googleImage = (options, message, callback) => {
 
 	request(requestParams, (error, response, body) => {
 		if (error || response.statusCode !== 200) {
-			console.log(error, response.statusCode);
+			console.log(error, response.statusCode, response);
 			callback("Bad Request.");
 		}
 		else {
