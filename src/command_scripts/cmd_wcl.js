@@ -7,8 +7,8 @@
 // Requirements
 // ---------------------------------
 
-import conf from "../config.json";
-import jsdom from "jsdom";
+const conf = require("../config");
+const jsdom = require("jsdom");
 
 // ---------------------------------
 // Private

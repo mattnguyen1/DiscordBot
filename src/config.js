@@ -1,4 +1,4 @@
-{
+module.exports = {
 	"urls" : {
 		"giphy": "http://api.giphy.com/v1/gifs/search",
 		"meme": "https://api.imgflip.com/caption_image",

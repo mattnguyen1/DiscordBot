@@ -7,7 +7,7 @@
 // Requirements
 // ---------------------------------
 
-import { messages } from "../botUtils";
+const { messages } = require("../botUtils");
 
 // ---------------------------------
 // Private

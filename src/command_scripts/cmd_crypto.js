@@ -7,9 +7,9 @@
 // Requirements
 // ---------------------------------
 
-import conf from "../config.json";
-import request from "request";
-import eachSeries from 'async/eachSeries';
+const conf = require('../config');
+const request = require('request');
+const eachSeries = require('async/eachSeries');
 
 // ---------------------------------
 // Constants

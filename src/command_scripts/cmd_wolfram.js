@@ -7,8 +7,8 @@
 // Requirements
 // ---------------------------------
 
-import conf from "../config.json";
-import wolframClient from "node-wolfram";
+const conf = require("../config");
+const wolframClient = require("node-wolfram");
 
 let wolfram = new wolframClient(process.env.WOLFRAM_KEY);
 

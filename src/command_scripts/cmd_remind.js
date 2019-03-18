@@ -7,11 +7,11 @@
 // Requirements
 // ---------------------------------
 
-import conf from "../config.json";
-import redisClient from "../redisClient";
-import chrono from "chrono-node";
-import { bot } from "../discordClient";
-import { addTimer, getFirstWord, stringifyJSON } from "../botUtils";
+const conf = require("../config");
+const redisClient = require("../redisClient");
+const chrono = require("chrono-node");
+const { bot } = require("../discordClient");
+const { addTimer, getFirstWord, stringifyJSON } = require("../botUtils");
 
 const numberRegex = /\d+/g;
 

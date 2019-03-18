@@ -7,7 +7,7 @@
 // Requirements
 // ---------------------------------
 
-import redisClient from "../redisClient";
+const redisClient = require("../redisClient");
 
 // ---------------------------------
 // Public

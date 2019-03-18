@@ -7,8 +7,8 @@
 // Requirements
 // ---------------------------------
 
-import { bot, getBotName } from "../discordClient";
-import base64 from "node-base64-image";
+const { bot, getBotName } = require("../discordClient");
+const base64 = require("node-base64-image");
 
 // ---------------------------------
 // Const

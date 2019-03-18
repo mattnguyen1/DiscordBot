@@ -7,9 +7,9 @@
 // Requirements
 // ---------------------------------
 
-import conf from "../config.json";
-import request from "request";
-import redisClient from "../redisClient";
+const conf = require("../config");
+const request = require("request");
+const redisClient = require("../redisClient");
 
 // ---------------------------------
 // Private

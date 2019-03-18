@@ -1,1 +1,1 @@
-worker: ./node_modules/babel-cli/bin/babel-node.js ./src/bot.js
+worker: node ./src/bot.js

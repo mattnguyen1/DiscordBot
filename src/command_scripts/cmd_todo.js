@@ -7,9 +7,9 @@
 // Requirements
 // ---------------------------------
 
-import async from "async";
-import redisClient from "../redisClient";
-import { isPositiveInteger } from "../botUtils";
+const async = require("async");
+const redisClient = require("../redisClient");
+const { isPositiveInteger } = require("../botUtils");
 
 // ---------------------------------
 // Private

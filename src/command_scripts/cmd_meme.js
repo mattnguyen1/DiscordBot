@@ -7,9 +7,9 @@
 // Requirements
 // ---------------------------------
 
-import { getBotName } from "../discordClient";
-import conf from "../config.json";
-import request from "request";
+const { getBotName } = require("../discordClient");
+const conf = require("../config");
+const request = require("request");
 
 // ---------------------------------
 // Private

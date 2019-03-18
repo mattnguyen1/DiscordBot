@@ -7,9 +7,9 @@
 // Requirements
 // ---------------------------------
 
-import conf from "./config.json";
-import url from "url";
-import redis from "redis";
+const conf = require("./config");
+const url = require("url");
+const redis = require("redis");
 
 let redisURL = url.parse(process.env.REDIS_URL),
 	redisClient = redis.createClient(redisURL.port, redisURL.hostname);

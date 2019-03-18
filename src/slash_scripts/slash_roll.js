@@ -7,7 +7,7 @@
 // Requirements
 // ---------------------------------
 
-import { isPositiveInteger } from "../botUtils";
+const { isPositiveInteger } = require("../botUtils");
 
 // ---------------------------------
 // Private

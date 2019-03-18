@@ -7,8 +7,8 @@
 // Requirements
 // ---------------------------------
 
-import redisClient from "./redisClient";
-import { bot } from "./discordClient";
+const redisClient = require("./redisClient");
+const { bot } = require("./discordClient");
 
 // ---------------------------------
 // Private

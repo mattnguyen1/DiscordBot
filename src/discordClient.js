@@ -1,4 +1,4 @@
-import Discord from 'discord.js';
+const Discord = require('discord.js');
 let bot = new Discord.Client();
 let name;
 

@@ -7,9 +7,9 @@
 // Requirements
 // ---------------------------------
 
-import conf from "../config.json";
-import request from "request";
-import { isImageURLNSFW } from "../util/sightengine-utils";
+const conf = require("../config");
+const request = require("request");
+const { isImageURLNSFW } = require("../util/sightengine-utils");
 
 // ---------------------------------
 // Private

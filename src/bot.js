@@ -7,16 +7,16 @@
 // Requirements
 // ---------------------------------
 
-import conf from "./config.json";
-import altCmds from "./altCommands.json"; 
-import extend from "extend";
-import async from "async";
-import url from "url";
-import request from "request";
-import express from "express";
-import redisClient from "./redisClient";
-import { bot } from "./discordClient";
-import { messages, addTimer, sendMessage } from "./botUtils";
+const conf = require("./config");
+const altCmds = require("./altCommands.json");
+const extend = require("extend");
+const async = require("async");
+const url = require("url");
+const request = require("request");
+const express = require("express");
+const redisClient = require("./redisClient");
+const { bot } = require("./discordClient");
+const { messages, addTimer, sendMessage } = require("./botUtils");
 
 // ---------------------------------
 // Vars
