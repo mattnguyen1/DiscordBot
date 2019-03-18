@@ -19,7 +19,7 @@ const querystring = require("query-string");
 const WEATHER_API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 function isZipcode(str) {
-	return str.match("[0-9]+") && str.length() === 6;
+	return str.match("[0-9]+") && str.length === 5;
 }
 
 /**
@@ -61,15 +61,19 @@ const getWeather = (options, message, callback) => {
 
 		request(request_url, (error, response, body) => {
 			if (error || response.statusCode !== 200) {
-				callback(new Error("Error processing request."), "Bad Request.");
-			}
-			else {
+				if (response.statusCode === 404) {
+					let responseObj = JSON.parse(body);
+					callback(new Error(responseObj.message));
+				} else {
+					callback(new Error("Error processing request."), "Bad Request.");
+				}
+			} else {
 				let responseObj = JSON.parse(body);
 				if (!responseObj.message) {
 					const weatherTemp = responseObj.main.temp;
 					const weatherDescription = responseObj.weather[0].main;
 					const responseMessage = "It is currently " + weatherTemp
-						+ " in " + responseObj.name + ".\n"
+						+ " degrees in " + responseObj.name + ".\n"
 						+ "The weather there is currently " + weatherDescription + ".";
 					callback(responseMessage);
 				} else {
