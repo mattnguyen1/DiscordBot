@@ -10,10 +10,17 @@
 const conf = require("../config");
 const request = require("request");
 const redisClient = require("../redisClient");
+const querystring = require("query-string");
 
 // ---------------------------------
 // Private
 // ---------------------------------
+
+const WEATHER_API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+
+function isZipcode(str) {
+	return str.match("[0-9]+") && str.length() === 6;
+}
 
 /**
  * Gets the weather information based on the location query
@@ -22,7 +29,7 @@ const redisClient = require("../redisClient");
  * @param  {Function} callback
  * @return {void}
  */
-let _weather = (options, message, callback) => {
+const getWeather = (options, message, callback) => {
 	let query = message.content,
 		userWeatherLocation = "";
 	if (options['set']) {
@@ -39,35 +46,41 @@ let _weather = (options, message, callback) => {
 			query = userWeatherLocation;
 		}
 
-		let request_url = conf.urls.weatherstart 
-			+ process.env.WEATHER 
-			+ conf.urls.weatherend
-			+ query + '.json';
-
+		const isQueryZipcode = isZipcode(query);
+		const queryParams = {
+			appid: process.env.WEATHER,
+			units: "imperial"
+		};
+		if (isQueryZipcode) {
+			queryParams.zip = query;
+		} else {
+			queryParams.q = query;
+		}
+		const queryParamsStr = querystring.stringify(queryParams);
+		let request_url = `${WEATHER_API_BASE_URL}?${queryParamsStr}`;
 
 		request(request_url, (error, response, body) => {
 			if (error || response.statusCode !== 200) {
-				callback(new Error("Wunderground error."), "Bad Request.");
+				callback(new Error("Error processing request."), "Bad Request.");
 			}
 			else {
 				let responseObj = JSON.parse(body);
-				if (responseObj.location != undefined) {
-					let cityweather = responseObj.current_observation;
-					let cityloc = responseObj.location;
-					let response = "It is currently " + cityweather.temperature_string
-						+ " in " + cityloc.city + ".\n"
-						+ "The weather there is currently " + cityweather.weather + ".";
-					callback(response);
+				if (!responseObj.message) {
+					const weatherTemp = responseObj.main.temp;
+					const weatherDescription = responseObj.weather[0].main;
+					const responseMessage = "It is currently " + weatherTemp
+						+ " in " + responseObj.name + ".\n"
+						+ "The weather there is currently " + weatherDescription + ".";
+					callback(responseMessage);
 				} else {
-					callback("No city :(");
+					callback(responseObj.message);
 				}
 			}
 		});
 	});
 }
-
 module.exports.weather = {
-	run: _weather,
+	run: getWeather,
 	usage: "weather <?location_query> \n"
 		+ "Options: \n"
 		+ "\t -set: Will save the query for the user.",

@@ -4,8 +4,6 @@ module.exports = {
 		"meme": "https://api.imgflip.com/caption_image",
 		"Kappa": "http://i.imgur.com/9JWyIBz.png",
 		"google": "https://www.googleapis.com/customsearch/v1",
-		"weatherstart": "http://api.wunderground.com/api/",
-		"weatherend": "/forecast/geolookup/conditions/q/",
 		"wolfram": "http://www.wolframalpha.com/input/?i=",
 		"leigong": "http://media3.giphy.com/media/I1r5jpUvdGra8/200.gif",
 		"wcl": "https://www.warcraftlogs.com/guilds/reportslist/",

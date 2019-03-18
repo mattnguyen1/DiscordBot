@@ -30,6 +30,7 @@
     "jsdom": "^9.5.0",
     "node-base64-image": "^1.0.1",
     "node-wolfram": "0.0.1",
+    "query-string": "^6.4.0",
     "redis": "^2.6.2",
     "request": "^2.67.0",
     "url": "^0.11.0"
