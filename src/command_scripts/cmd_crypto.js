@@ -21,7 +21,7 @@ const SPOT_PRICE_ENDPOINT = '/spot';
 const EXCHANGE_PRICE_ENDPOINT = '/exchange-rates'
 const DEFAULT_CRYPTO = 'BTC';
 const DEFAULT_CURRENCY = 'USD';
-const CRYPTO_LIST = ['BTC', 'LTC', 'ETH', 'BCH', 'DOGE'];
+const CRYPTO_LIST = ['BTC', 'LTC', 'ETH', 'BCH', 'DOGE', 'SHIB'];
 const VALIDATE_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 // ---------------------------------
