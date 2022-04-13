@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/mattnguyen1/DiscordBot#readme",
   "dependencies": {
-    "async": "^2.6.0",
+    "async": "^3.2.2",
     "babel-cli": "^6.14.0",
     "babel-preset-es2015": "^6.14.0",
     "chrono-node": "^1.2.4",
