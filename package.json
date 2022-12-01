@@ -23,7 +23,7 @@
     "async": "^2.6.0",
     "babel-cli": "^6.14.0",
     "babel-preset-es2015": "^6.14.0",
-    "chrono-node": "^1.2.4",
+    "chrono-node": "^2.2.4",
     "discord.js": "^9.1.1",
     "express": "^4.13.3",
     "extend": "^3.0.0",
