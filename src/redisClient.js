@@ -21,12 +21,12 @@ let redisURL = url.parse(process.env.REDIS_URL),
 });
 
 // Authenticate with the Redis instance
-// redisClient.auth(redisURL.auth.split(':')[1], (err) => {
-// 	if (err) {
-// 		console.log("Redis auth error: " + err);
-// 		return;
-// 	}
-// });
+redisClient.auth(redisURL.auth.split(':')[1], (err) => {
+	if (err) {
+		console.log("Redis auth error: " + err);
+		return;
+	}
+});
 
 // Subscribe to Redis errors
 redisClient.on("error", function (err) {
