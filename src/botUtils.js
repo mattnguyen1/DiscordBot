@@ -58,6 +58,7 @@ module.exports = {
    * @returns {void}
    */
   addTimer: (timestamp, reminder) => {
+    console.log("adding reminder", timestamp);
     let currentTimestamp = Date.now();
     setTimeout(function () {
       redisClient.HDEL("reminders", stringifyJSON(timestamp));
