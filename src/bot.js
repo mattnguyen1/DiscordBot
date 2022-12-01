@@ -95,13 +95,10 @@ async function init() {
     const storedReminders = await redisClient.HGETALL("reminders");
     console.log("stored reminders", storedReminders);
     for (let key in storedReminders) {
-      if (obj.hasOwnProperty(key)) {
-        let timestamp = JSON.parse(key);
-        if (timestamp < Date.now()) {
-          redisClient.HDEL("reminders", key);
-        }
-        addTimer(timestamp, obj[key]);
+      if (timestamp.time < Date.now()) {
+        redisClient.HDEL("reminders", key);
       }
+      addTimer(timestamp, storedReminders[key]);
     }
   } catch (err) {
     console.log("Redis load reminders error: " + err);
