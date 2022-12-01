@@ -16,10 +16,10 @@ const querystring = require("query-string");
 // Private
 // ---------------------------------
 
-const WEATHER_API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+const WEATHER_API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 
 function isZipcode(str) {
-	return str.match("[0-9]+") && str.length === 5;
+  return str.match("[0-9]+") && str.length === 5;
 }
 
 /**
@@ -30,63 +30,70 @@ function isZipcode(str) {
  * @return {void}
  */
 const getWeather = (options, message, callback) => {
-	let query = message.content,
-		userWeatherLocation = "";
-	if (options['set']) {
-		redisClient.hset("weather", message.author.toString(), message.content);
-	}
+  let query = message.content,
+    userWeatherLocation = "";
+  if (options["set"]) {
+    redisClient.HSET("weather", message.author.toString(), message.content);
+  }
 
-	redisClient.hget("weather", message.author.toString(), (err, res) => {
-		if (err) {
-			userWeatherLocation = null;
-		} else {
-			userWeatherLocation = res;
-		}
-		if (!!userWeatherLocation && !query) {
-			query = userWeatherLocation;
-		}
+  redisClient.HGET("weather", message.author.toString(), (err, res) => {
+    if (err) {
+      userWeatherLocation = null;
+    } else {
+      userWeatherLocation = res;
+    }
+    if (!!userWeatherLocation && !query) {
+      query = userWeatherLocation;
+    }
 
-		const isQueryZipcode = isZipcode(query);
-		const queryParams = {
-			appid: process.env.WEATHER,
-			units: "imperial"
-		};
-		if (isQueryZipcode) {
-			queryParams.zip = query;
-		} else {
-			queryParams.q = query;
-		}
-		const queryParamsStr = querystring.stringify(queryParams);
-		let request_url = `${WEATHER_API_BASE_URL}?${queryParamsStr}`;
+    const isQueryZipcode = isZipcode(query);
+    const queryParams = {
+      appid: process.env.WEATHER,
+      units: "imperial",
+    };
+    if (isQueryZipcode) {
+      queryParams.zip = query;
+    } else {
+      queryParams.q = query;
+    }
+    const queryParamsStr = querystring.stringify(queryParams);
+    let request_url = `${WEATHER_API_BASE_URL}?${queryParamsStr}`;
 
-		request(request_url, (error, response, body) => {
-			if (error || response.statusCode !== 200) {
-				if (response.statusCode === 404) {
-					let responseObj = JSON.parse(body);
-					callback(new Error(responseObj.message));
-				} else {
-					callback(new Error("Error processing request."), "Bad Request.");
-				}
-			} else {
-				let responseObj = JSON.parse(body);
-				if (!responseObj.message) {
-					const weatherTemp = responseObj.main.temp;
-					const weatherDescription = responseObj.weather[0].main;
-					const responseMessage = "It is currently " + weatherTemp
-						+ " degrees in " + responseObj.name + ".\n"
-						+ "The weather there is currently " + weatherDescription + ".";
-					callback(responseMessage);
-				} else {
-					callback(responseObj.message);
-				}
-			}
-		});
-	});
-}
+    request(request_url, (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        if (response.statusCode === 404) {
+          let responseObj = JSON.parse(body);
+          callback(new Error(responseObj.message));
+        } else {
+          callback(new Error("Error processing request."), "Bad Request.");
+        }
+      } else {
+        let responseObj = JSON.parse(body);
+        if (!responseObj.message) {
+          const weatherTemp = responseObj.main.temp;
+          const weatherDescription = responseObj.weather[0].main;
+          const responseMessage =
+            "It is currently " +
+            weatherTemp +
+            " degrees in " +
+            responseObj.name +
+            ".\n" +
+            "The weather there is currently " +
+            weatherDescription +
+            ".";
+          callback(responseMessage);
+        } else {
+          callback(responseObj.message);
+        }
+      }
+    });
+  });
+};
 module.exports.weather = {
-	run: getWeather,
-	usage: "weather <?location_query> \n"
-		+ "Options: \n"
-		+ "\t -set: Will save the query for the user.",
-	description: "Gets the weather information based on the location query"
-}
+  run: getWeather,
+  usage:
+    "weather <?location_query> \n" +
+    "Options: \n" +
+    "\t -set: Will save the query for the user.",
+  description: "Gets the weather information based on the location query",
+};
