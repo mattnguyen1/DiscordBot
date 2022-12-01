@@ -91,13 +91,10 @@ async function init() {
   await redisClient.connect();
 
   // Load Reminders
-  redisClient.HGETALL("reminders", (err, obj) => {
-    if (err) {
-      console.log("Redis load reminders error: " + err);
-      return;
-    }
-    console.log("received redis reminders", obj);
-    for (let key in obj) {
+  try {
+    const storedReminders = await redisClient.HGETALL("reminders");
+    console.log("stored reminders", storedReminders);
+    for (let key in storedReminders) {
       if (obj.hasOwnProperty(key)) {
         let timestamp = JSON.parse(key);
         if (timestamp < Date.now()) {
@@ -106,7 +103,9 @@ async function init() {
         addTimer(timestamp, obj[key]);
       }
     }
-  });
+  } catch (err) {
+    console.log("Redis load reminders error: " + err);
+  }
 
   // Load bot command scripts
   let commandScriptsPath = require("path").join(__dirname, "command_scripts");
