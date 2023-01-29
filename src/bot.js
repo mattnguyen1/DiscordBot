@@ -95,6 +95,7 @@ async function init() {
     const storedReminders = await redisClient.HGETALL("reminders");
     console.log("stored reminders", storedReminders);
     for (let key in storedReminders) {
+      const timestamp = JSON.parse(key);
       if (timestamp.time < Date.now()) {
         redisClient.HDEL("reminders", key);
       }
