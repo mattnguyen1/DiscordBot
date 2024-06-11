@@ -35,7 +35,8 @@ let _genImage = async (options, message, callback) => {
     const image_url = response.data[0].url;
     callback(image_url);
   } catch (e) {
-    callback("Error generating image.");
+    console.log("ai error", e);
+    callback("Error generating image: " + e.error.message);
   }
 };
 
