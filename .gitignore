@@ -1,9 +1,14 @@
 # Configs
 .env
+*.env
 
 # Node
-/node_modules
-.DS_STORE
+node_modules/
 npm-debug.log
-/*.env
-/out
+
+# Build
+dist/
+out/
+
+# OS/editor
+.DS_STORE

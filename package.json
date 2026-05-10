@@ -1,43 +1,38 @@
 {
   "name": "discordbot",
-  "version": "1.0.0",
-  "description": "Discord bot that does things.",
-  "main": "bot.js",
+  "version": "2.0.0",
+  "description": "Bro, a modern TypeScript Discord bot.",
+  "type": "module",
+  "main": "dist/bot.js",
   "scripts": {
-    "start": "node ./src/bot.js",
-    "watch": "heroku local"
+    "dev": "tsx src/bot.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/bot.js",
+    "test": "vitest run",
+    "test:e2e:offline": "NODE_ENV=test tsx src/e2e-offline.ts"
   },
   "engines": {
-    "node": "20.14.0"
+    "node": ">=20"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattnguyen1/DiscordBot.git"
+    "url": "git+ssh://git@github.com/mattnguyen1/DiscordBot.git"
   },
-  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mattnguyen1/DiscordBot/issues"
-  },
-  "homepage": "https://github.com/mattnguyen1/DiscordBot#readme",
   "dependencies": {
-    "async": "^2.6.0",
-    "babel-cli": "^6.14.0",
-    "babel-preset-es2015": "^6.14.0",
-    "chrono-node": "^1.2.4",
-    "discord.js": "^9.1.1",
-    "express": "^4.13.3",
-    "extend": "^3.0.0",
-    "jsdom": "^9.5.0",
-    "node-base64-image": "^1.0.1",
-    "node-wolfram": "0.0.1",
-    "openai": "^4.50.0",
-    "query-string": "^6.4.0",
-    "redis": "^4.5.1",
-    "request": "^2.67.0",
-    "url": "^0.11.0"
+    "chrono-node": "^2.8.4",
+    "discord.js": "^14.19.3",
+    "express": "^5.1.0",
+    "openai": "^4.103.0",
+    "redis": "^4.7.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.14.0"
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.18",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }
