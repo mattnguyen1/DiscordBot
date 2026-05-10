@@ -59,6 +59,7 @@ module.exports = {
 			let response = "Here are some of the commands I can do!\n";
 			response +=  "\t" + name + " gif <query>\n";
 			response +=  "\t" + name + " image <query>\n";
+			response +=  "\t" + name + " llm <prompt>\n";
 			response +=  "\t" + name + " meme help\n";
 			response +=  "\t" + name + " weather <zipcode>\n";
 			response +=  "\t" + name + " wolfram <query>\n";
