@@ -20,5 +20,6 @@ export interface Command {
   usage?: string;
   description?: string;
   ownerOnly?: boolean;
+  loadingText?: string;
   run(ctx: CommandContext): Promise<string | void | null>;
 }

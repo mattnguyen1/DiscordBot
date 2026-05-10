@@ -21,6 +21,7 @@ export const imageCommand: Command = {
   aliases: ["i"],
   usage: "image <query>",
   description: "Returns a random image search result.",
+  loadingText: "🔎 Searching images…",
   async run({ args }) {
     if (!args.trim()) return "Usage: image <query>";
 

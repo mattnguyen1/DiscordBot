@@ -36,6 +36,21 @@ async function sendReply(message: Parameters<typeof trackSentMessage>[0], conten
   trackSentMessage(sent);
 }
 
+async function sendLoadingReply(message: Parameters<typeof trackSentMessage>[0], content: string) {
+  const sent = await (message.channel as any).send(content.slice(0, 2000));
+  trackSentMessage(sent);
+  return sent as { edit(content: string): Promise<unknown> };
+}
+
+function startTyping(message: Parameters<typeof trackSentMessage>[0]) {
+  void (message.channel as any).sendTyping?.().catch?.(() => undefined);
+  const interval = setInterval(() => {
+    void (message.channel as any).sendTyping?.().catch?.(() => undefined);
+  }, 8_000);
+  interval.unref();
+  return () => clearInterval(interval);
+}
+
 client.once(Events.ClientReady, async (loggedInClient) => {
   ready = true;
   console.log(`${loggedInClient.user.username} is online.`);
@@ -74,6 +89,11 @@ client.on(Events.MessageCreate, async (message) => {
     return;
   }
 
+  const stopTyping = command.loadingText && rest.trim() ? startTyping(message) : undefined;
+  const loadingReply = command.loadingText && rest.trim()
+    ? await sendLoadingReply(message, command.loadingText)
+    : undefined;
+
   try {
     const result = await command.run({
       client,
@@ -85,11 +105,23 @@ client.on(Events.MessageCreate, async (message) => {
       isOwner,
       reply: (content) => sendReply(message, content),
     });
-    await sendReply(message, result);
+
+    if (loadingReply && result) {
+      await loadingReply.edit(result.slice(0, 2000));
+    } else {
+      await sendReply(message, result);
+    }
   } catch (error) {
     console.error(`Command ${commandName} failed`, error);
     const messageText = error instanceof Error ? error.message : "Unknown error";
-    await sendReply(message, `Error: ${messageText}`);
+    const errorReply = `Error: ${messageText}`;
+    if (loadingReply) {
+      await loadingReply.edit(errorReply.slice(0, 2000));
+    } else {
+      await sendReply(message, errorReply);
+    }
+  } finally {
+    stopTyping?.();
   }
 });
 

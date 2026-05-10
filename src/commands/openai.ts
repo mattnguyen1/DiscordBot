@@ -12,6 +12,7 @@ export const llmCommand: Command = {
   name: "llm",
   usage: "llm <prompt>",
   description: "Asks ChatGPT a question.",
+  loadingText: "🤔 Thinking…",
   async run({ args }) {
     if (!args.trim()) return "Usage: llm <prompt>";
     const response = await client().chat.completions.create({
@@ -29,6 +30,7 @@ export const aiCommand: Command = {
   name: "ai",
   usage: "ai <image prompt>",
   description: "Generates an image with OpenAI.",
+  loadingText: "🎨 Generating image…",
   async run({ args }) {
     if (!args.trim()) return "Usage: ai <image prompt>";
     const response = await client().images.generate({
