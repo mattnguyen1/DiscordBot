@@ -89,7 +89,7 @@ client.on(Events.MessageCreate, async (message) => {
     return;
   }
 
-  const stopTyping = command.loadingText && rest.trim() ? startTyping(message) : undefined;
+  const stopTyping = startTyping(message);
   const loadingReply = command.loadingText && rest.trim()
     ? await sendLoadingReply(message, command.loadingText)
     : undefined;
